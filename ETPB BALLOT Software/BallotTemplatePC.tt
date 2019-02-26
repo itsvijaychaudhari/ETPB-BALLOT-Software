@@ -1,0 +1,674 @@
+﻿<#@ template language="C#" debug="true"  #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="$(SolutionDir)\CandidateDetails\bin\Debug\CandidateDetails.dll" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="ETPB_BALLOT_Software"#>
+
+<#@ parameter name ="TTfileDict" type="CandidateDetails.BallotCandidateList" #>
+<#@ Parameter name ="Imagesrc" type="System.String" #>
+<#@ Parameter name ="Imagesrc2" type="System.String" #>
+<#@ Parameter name ="FontFamily" type="System.String" #>
+
+
+<html>
+<head>
+
+	<style>
+	
+	#borderimg1 { 
+		border: 9px black solid;
+
+		border-image:  url(<#= Imagesrc2 #>) ;
+		border-image-repeat:round;
+		 border-image-slice: 48;
+		   border-image-outset:18px;
+		border-image-width:29px;
+		
+	}
+	</style>
+	
+	
+</head>
+
+<body style="margin: 20px;">
+
+<table style="width:100%">
+        <tr>
+ 			<td>
+			   <p style = "line-height: 20px;font-weight: bold;">
+			   <img src = <#= Imagesrc #> alt="eci_logo" style='vertical-align: middle' height="42" width="42" /> Election Commission of India
+			   </p>
+			</td>
+ 		</tr>
+ 		<tr>
+			<td>&nbsp;</td>
+	    </tr>
+		<tr>
+			<td>
+	   			<p style="font-weight: bold;">e-PBID :</p> 
+	   		</td>		
+		</tr>
+		<tr>
+			<td align="center">&nbsp;
+			</td>
+		</tr>
+		<tr>
+			<td align="center">
+			</td>
+		</tr>
+		<tr>
+			<td>
+	    		<p style="font-weight: bold;text-align:center;">POSTAL BALLOT PAPER</p>
+			</td>
+		</tr>
+
+</table>
+
+<hr style="height:5px; background-color: black; width:100%;"/>
+
+<#
+	if(TTfileDict.Candidate.Count < 9)
+	 {                                                                          
+#>
+       <table id="borderimg1" style=" width:100%; margin-top:25px; " cellspacing="0" cellpadding="7">
+<#
+		 for(int i = 0; i < TTfileDict.Candidate.Count; i++)
+		   {
+			 var j = i+1;
+#>
+			 <tr>
+		
+			                   <td align="center" style="border-right:1px black solid; border-bottom:5px solid black; width:5%">
+									<span style="font-size:20px;"><#= j #></span>
+								</td>
+								<td style="border-right:1px black solid; border-bottom:5px solid black; width:55%;">
+									<span style="font-size:18px; font-family:<#= FontFamily #>;"> <#= this.TTfileDict.Candidate[i].CandidateNameOL #> </span><br/>
+									<span style="font-size:11px;line-height:0.5 ; font-family:<#= FontFamily #>;"><#= this.TTfileDict.Candidate[i].PartyNameOL #></span><br/>
+									<span style="font-size:22px; margin-top:5px;"><#= this.TTfileDict.Candidate[i].CandidateNameENG #></span><br/>
+									<span style="font-size:15px;"><#= this.TTfileDict.Candidate[i].PartyNameENG #></span><br/>
+								</td>
+								<#
+								if(this.TTfileDict.Candidate[i].CandidatePhoto.Length > 1)
+								{
+								#>
+									<td style="border-right:1px black solid; border-bottom:5px solid black; width:20%;" align="center">
+										<img id="blah" src="<#= "data:image/jpg;base64," + Convert.ToBase64String(this.TTfileDict.Candidate[i].CandidatePhoto) #>" alt="your image" style="height: 96px; width: 74px;" />
+									</td>
+								<#
+								}
+								else
+								{#>
+									<td style="border-right:1px black solid; border-bottom:5px solid black; width:20%; height:96px;">&nbsp;</td>
+								<#
+								}
+								#>
+								<td style="border-bottom:5px solid black; width:20%">
+								</td>
+			 </tr>
+
+<#
+           }
+   
+		 for(var i = 0; i < (10 - TTfileDict.Candidate.Count); i++)
+			{
+#>
+               <tr style="height: 98px;">
+				 <td>&nbsp;</td>
+				</tr>
+	   
+<#
+            }
+  
+#>	   
+	   
+	   </table>
+
+
+<#
+     }                                                               
+#>
+
+
+<#
+	if(TTfileDict.Candidate.Count == 9)
+	 {                                                                        
+#>
+       <table id="borderimg1" style=" width:100%; margin-top:25px; " cellspacing="0" cellpadding="7">
+<#
+		 for(int i = 0; i < TTfileDict.Candidate.Count; i++)
+		   {
+				 var j = i+1;
+				 if(i==8)
+				 {
+#>			 
+				   <tr>
+				
+				               <td align="center" style="border-right:1px black solid; width:5%">
+									<span style="font-size:20px;"><#= j #></span>
+								</td>
+								<td style="border-right:1px black solid;  width:55%;">
+									<span style="font-size:18px; font-family:<#= FontFamily #>;"> <#= this.TTfileDict.Candidate[i].CandidateNameOL #> </span><br/>
+									<span style="font-size:11px;line-height:0.5 ; font-family:<#= FontFamily #>;"><#= this.TTfileDict.Candidate[i].PartyNameOL #></span><br/>
+									<span style="font-size:22px; margin-top:5px;"><#= this.TTfileDict.Candidate[i].CandidateNameENG #></span><br/>
+									<span style="font-size:15px;"><#= this.TTfileDict.Candidate[i].PartyNameENG #></span><br/>
+								</td>
+								<#
+								if(this.TTfileDict.Candidate[i].CandidatePhoto.Length > 1)
+								{
+								#>
+									<td style="border-right:1px black solid;  width:20%;" align="center">
+										<img id="blah" src="<#= "data:image/jpg;base64," + Convert.ToBase64String(this.TTfileDict.Candidate[i].CandidatePhoto) #>" alt="your image" style="height: 96px; width: 74px;" />
+									</td>
+								<#
+								}
+								else
+								{#>
+									<td style="border-right:1px black solid;  width:20%; height:96px;">&nbsp;</td>
+								<#
+								}
+								#>
+								<td style=" width:20%">
+								</td>
+				   </tr>
+<#		             
+	   
+				 }
+				 else
+				 {
+				 
+#>
+					<tr>
+				
+					           <td align="center" style="border-right:1px black solid; border-bottom:5px solid black; width:5%">
+									<span style="font-size:20px;"><#= j #></span>
+								</td>
+								<td style="border-right:1px black solid; border-bottom:5px solid black; width:55%;">
+									<span style="font-size:18px; font-family:<#= FontFamily #>;"> <#= this.TTfileDict.Candidate[i].CandidateNameOL #> </span><br/>
+									<span style="font-size:11px;line-height:0.1 ; font-family:<#= FontFamily #>;"><#= this.TTfileDict.Candidate[i].PartyNameOL #></span><br/>
+									<span style="font-size:22px; margin-top:5px;"><#= this.TTfileDict.Candidate[i].CandidateNameENG #></span><br/>
+									<span style="font-size:15px;"><#= this.TTfileDict.Candidate[i].PartyNameENG #></span><br/>
+								</td>
+								<#
+								if(this.TTfileDict.Candidate[i].CandidatePhoto.Length > 1)
+								{
+								#>
+									<td style="border-right:1px black solid; border-bottom:5px solid black; width:20%;" align="center">
+										<img id="blah" src="<#= "data:image/jpg;base64," + Convert.ToBase64String(this.TTfileDict.Candidate[i].CandidatePhoto) #>" alt="your image" style="height: 96px; width: 74px;" />
+									</td>
+								<#
+								}
+								else
+								{#>
+									<td style="border-right:1px black solid; border-bottom:5px solid black; width:20%; height:96px;">&nbsp;</td>
+								<#
+								}
+								#>
+								<td style="border-bottom:5px solid black; width:20%">
+								</td>
+					</tr>
+
+<#
+                 }
+           }
+#>  
+	   
+	   </table>
+
+<#
+     }                                                                
+#>
+
+
+
+<#
+	if(TTfileDict.Candidate.Count > 9)
+	{                                                                      
+#>
+      <table id="borderimg1" style=" width:100%; margin-top:25px; " cellspacing="0" cellpadding="7">
+<#
+		 for(int i = 0; i < 9; i++)
+		   {
+				 var j = i+1;
+				 if(i==8)
+				 {
+#>			 
+				   <tr>
+				
+				                <td align="center" style="border-right:1px black solid; width:5%">
+									<span style="font-size:20px;"><#= j #></span>
+								</td>
+								<td style="border-right:1px black solid;  width:55%;">
+									<span style="font-size:18px; font-family:<#= FontFamily #>;"> <#= this.TTfileDict.Candidate[i].CandidateNameOL #> </span><br/>
+									<span style="font-size:11px;line-height:0.5 ; font-family:<#= FontFamily #>;"><#= this.TTfileDict.Candidate[i].PartyNameOL #></span><br/>
+									<span style="font-size:22px; margin-top:5px;"><#= this.TTfileDict.Candidate[i].CandidateNameENG #></span><br/>
+									<span style="font-size:15px;"><#= this.TTfileDict.Candidate[i].PartyNameENG #></span><br/>
+								</td>
+								<#
+								if(this.TTfileDict.Candidate[i].CandidatePhoto.Length > 1)
+								{
+								#>
+									<td style="border-right:1px black solid;  width:20%;" align="center">
+										<img id="blah" src="<#= "data:image/jpg;base64," + Convert.ToBase64String(this.TTfileDict.Candidate[i].CandidatePhoto) #>" alt="your image" style="height: 96px; width: 74px;" />
+									</td>
+								<#
+								}
+								else
+								{#>
+									<td style="border-right:1px black solid;  width:20%; height:96px;">&nbsp;</td>
+								<#
+								}
+								#>
+								<td style=" width:20%">
+								</td>
+				   </tr>
+<#		             
+	   
+				 }
+				 else
+				 {
+				 
+#>
+					<tr>
+				
+					           <td align="center" style="border-right:1px black solid; border-bottom:5px solid black; width:5%">
+									<span style="font-size:20px;"><#= j #></span>
+								</td>
+								<td style="border-right:1px black solid; border-bottom:5px solid black; width:55%;">
+									<span style="font-size:18px; font-family:<#= FontFamily #>;"> <#= this.TTfileDict.Candidate[i].CandidateNameOL #> </span><br/>
+									<span style="font-size:11px; line-height:0.5 ;font-family:<#= FontFamily #>;"><#= this.TTfileDict.Candidate[i].PartyNameOL #></span><br/>
+									<span style="font-size:22px; margin-top:5px;"><#= this.TTfileDict.Candidate[i].CandidateNameENG #></span><br/>
+									<span style="font-size:15px;"><#= this.TTfileDict.Candidate[i].PartyNameENG #></span><br/>
+								</td>
+								<#
+								if(this.TTfileDict.Candidate[i].CandidatePhoto.Length > 1)
+								{
+								#>
+									<td style="border-right:1px black solid; border-bottom:5px solid black; width:20%;" align="center">
+										<img id="blah" src="<#= "data:image/jpg;base64," + Convert.ToBase64String(this.TTfileDict.Candidate[i].CandidatePhoto) #>" alt="your image" style="height: 96px; width: 74px;" />
+									</td>
+								<#
+								}
+								else
+								{#>
+									<td style="border-right:1px black solid; border-bottom:5px solid black; width:20%; height:96px;">&nbsp;</td>
+								<#
+								}
+								#>
+								<td style="border-bottom:5px solid black; width:20%">
+								</td>
+					</tr>
+
+<#
+                 }
+		   }
+#>
+      </table>
+<#
+          int threshold = 9;
+		  int nextLotCount = TTfileDict.Candidate.Count - threshold;
+		  int previousLotCount = threshold;
+		  while(nextLotCount > 0)
+			{                                                                   
+			  if(nextLotCount > threshold)
+			    {                                                                
+#>
+				   <p style="page-break-after:always;"></p>
+				   <br />
+				   <table style="width:100%">
+ 						<tr>
+ 							<td>
+								<p style = "line-height: 20px;font-weight: bold;">
+								<img src = <#= Imagesrc #> alt="eci_logo" style='vertical-align: middle' height="42" width="42" /> Election Commission of India
+								</p>
+							</td>
+ 						</tr>
+ 						<tr>
+							<td>&nbsp;</td>
+						</tr>
+						<tr>
+							<td>
+	   							<p style="font-weight: bold;">e-PBID :</p> 
+	   						</td>		
+						</tr>
+						<tr>
+							<td align="center">&nbsp;
+							</td>
+						</tr>
+						<tr>
+							<td align="center">
+							</td>
+						</tr>
+						<tr>
+							<td>
+	    						<p style="font-weight: bold;text-align:center;">POSTAL BALLOT PAPER</p>
+							</td>
+						</tr>
+					</table>
+
+					<hr style="height:5px; background-color: black;"/>
+					<table id="borderimg1" style=" width:100% ; margin-top:25px; " cellspacing="0" cellpadding="12">
+<#
+						for(int i = previousLotCount; i < (previousLotCount + threshold); i++)
+						   {  
+							 var j = i+1;
+							 
+                             var lastIndex=(previousLotCount + threshold)-1;
+                             if(i==lastIndex)
+				               {
+#>			 
+								   <tr>
+								 
+								   <td align="center" style="border-right:1px black solid; width:5%">
+									<span style="font-size:20px;"><#= j #></span>
+								</td>
+								<td style="border-right:1px black solid;  width:55%;">
+									<span style="font-size:18px; font-family:<#= FontFamily #>;"> <#= this.TTfileDict.Candidate[i].CandidateNameOL #> </span><br/>
+									<span style="font-size:11px; line-height:0.5 ;font-family:<#= FontFamily #>;"><#= this.TTfileDict.Candidate[i].PartyNameOL #></span><br/>
+									<span style="font-size:22px; margin-top:5px;"><#= this.TTfileDict.Candidate[i].CandidateNameENG #></span><br/>
+									<span style="font-size:15px;"><#= this.TTfileDict.Candidate[i].PartyNameENG #></span><br/>
+								</td>
+								<#
+								if(this.TTfileDict.Candidate[i].CandidatePhoto.Length > 1)
+								{
+								#>
+									<td style="border-right:1px black solid;  width:20%;" align="center">
+										<img id="blah" src="<#= "data:image/jpg;base64," + Convert.ToBase64String(this.TTfileDict.Candidate[i].CandidatePhoto) #>" alt="your image" style="height: 96px; width: 74px;" />
+									</td>
+								<#
+								}
+								else
+								{#>
+									<td style="border-right:1px black solid;  width:20%; height:96px;">&nbsp;</td>
+								<#
+								}
+								#>
+								<td style=" width:20%">
+								</td>
+								   </tr>
+<#	   
+							   }
+							 else
+							   {				 
+#>
+								<tr>
+							
+								   <td align="center" style="border-right:1px black solid; border-bottom:5px solid black; width:5%">
+									<span style="font-size:20px;"><#= j #></span>
+								   </td>
+								   <td style="border-right:1px black solid; border-bottom:5px solid black; width:55%;">
+									<span style="font-size:18px; font-family:<#= FontFamily #>;"> <#= this.TTfileDict.Candidate[i].CandidateNameOL #> </span><br/>
+									<span style="font-size:11px; line-height:0.5 ; font-family:<#= FontFamily #>;"><#= this.TTfileDict.Candidate[i].PartyNameOL #></span><br/>
+									<span style="font-size:22px; margin-top:5px;"><#= this.TTfileDict.Candidate[i].CandidateNameENG #></span><br/>
+									<span style="font-size:15px;"><#= this.TTfileDict.Candidate[i].PartyNameENG #></span><br/>
+								   </td>
+								<#
+								if(this.TTfileDict.Candidate[i].CandidatePhoto.Length > 1)
+								{
+								#>
+									<td style="border-right:1px black solid; border-bottom:5px solid black; width:20%;" align="center">
+										<img id="blah" src="<#= "data:image/jpg;base64," + Convert.ToBase64String(this.TTfileDict.Candidate[i].CandidatePhoto) #>" alt="your image" style="height: 96px; width: 74px;" />
+									</td>
+								<#
+								}
+								else
+								{#>
+									<td style="border-right:1px black solid; border-bottom:5px solid black; width:20%; height:96px;">&nbsp;</td>
+								<#
+								}
+								#>
+								<td style="border-bottom:5px solid black; width:20%">
+								</td>
+							   </tr>
+
+<#
+                               }
+						  } 
+#>
+					</table>
+ 
+<#				
+                    previousLotCount = previousLotCount + 9;
+					nextLotCount = nextLotCount - 9;
+				}                                                             
+				else                                                              
+				 {                                                               
+				   if(nextLotCount < threshold)
+				   {                                                            
+				   
+#>
+                    <p style="page-break-after:always;"></p>
+					<br />
+					<table style="width:100%">
+ 							<tr>
+ 								<td>
+								   <p style = "line-height: 20px;font-weight: bold;">
+								   <img src = <#= Imagesrc #> alt="eci_logo" style='vertical-align: middle' height="42" width="42" /> Election Commission of India
+								   </p>
+								</td>
+ 							</tr>
+ 							<tr>
+								<td>&nbsp;</td>
+							</tr>
+							<tr>
+								<td>
+	   								<p style="font-weight: bold;">e-PBID :</p> 
+	   							</td>		
+							</tr>
+							<tr>
+								<td align="center">&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td align="center">
+								</td>
+							</tr>
+							<tr>
+								<td>
+	    							<p style="font-weight: bold;text-align:center;">POSTAL BALLOT PAPER</p>
+								</td>
+							</tr>
+						</table>
+			
+					<hr style="height:5px; background-color: black;"/>
+					<table id="borderimg1" style=" width:100%; margin-top:25px; " cellspacing="0" cellpadding="12">
+					
+<#
+					for(int i = previousLotCount; i < (previousLotCount + nextLotCount); i++)
+					   {
+						 var j = i+1;
+#>
+						 <tr>
+					
+						       <td align="center" style="border-right:1px black solid; border-bottom:5px solid black; width:5%">
+									<span style="font-size:20px;"><#= j #></span>
+								</td>
+								<td style="border-right:1px black solid; border-bottom:5px solid black; width:55%;">
+									<span style="font-size:18px; font-family:<#= FontFamily #>;"> <#= this.TTfileDict.Candidate[i].CandidateNameOL #> </span><br/>
+									<span style="font-size:11px; line-height:0.5 ; font-family:<#= FontFamily #>;"><#= this.TTfileDict.Candidate[i].PartyNameOL #></span><br/>
+									<span style="font-size:22px; margin-top:5px;"><#= this.TTfileDict.Candidate[i].CandidateNameENG #></span><br/>
+									<span style="font-size:15px;"><#= this.TTfileDict.Candidate[i].PartyNameENG #></span><br/>
+								</td>
+								<#
+								if(this.TTfileDict.Candidate[i].CandidatePhoto.Length > 1)
+								{
+								#>
+									<td style="border-right:1px black solid; border-bottom:5px solid black; width:20%;" align="center">
+										<img id="blah" src="<#= "data:image/jpg;base64," + Convert.ToBase64String(this.TTfileDict.Candidate[i].CandidatePhoto) #>" alt="your image" style="height: 96px; width: 74px;" />
+									</td>
+								<#
+								}
+								else
+								{#>
+									<td style="border-right:1px black solid; border-bottom:5px solid black; width:20%; height:96px;">&nbsp;</td>
+								<#
+								}
+								#>
+								<td style="border-bottom:5px solid black; width:20%">
+								</td>
+						 </tr>
+<#
+					   }					
+					for(var i = 0; i < (10 - nextLotCount); i++)
+					   {
+#>
+						   <tr style="height: 98px;">
+						   <td>&nbsp;
+						   </td>
+						   </tr>
+
+<#
+					    }
+					  
+#>					
+					</table>
+<#	
+						previousLotCount = previousLotCount + 9;
+						nextLotCount = nextLotCount - 9;
+		
+                   }                                                               
+				   
+				   if(nextLotCount == threshold)
+					   {                                                             
+#>
+						<p style="page-break-after:always;"></p>
+						<br />
+						<table style="width:100%">
+								<tr>
+									<td>
+									   <p style = "line-height: 20px;font-weight: bold;">
+									   <img src = <#= Imagesrc #> alt="eci_logo" style='vertical-align: middle' height="42" width="42" /> Election Commission of India
+									   </p>
+									</td>
+								</tr>
+								<tr>
+									<td>&nbsp;</td>
+								</tr>
+								<tr>
+									<td>
+										<p style="font-weight: bold;">e-PBID :</p> 
+									</td>		
+								</tr>
+								<tr>
+									<td align="center">&nbsp;
+									</td>
+								</tr>
+								<tr>
+									<td align="center">
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<p style="font-weight: bold;text-align:center;">POSTAL BALLOT PAPER</p>
+									</td>
+								</tr>
+							</table>
+				
+						<hr style="height:5px; background-color: black;"/>
+						<table id="borderimg1" style=" width:100%; margin-top:25px; " cellspacing="0" cellpadding="12">
+<#
+						for(int i = previousLotCount; i < (previousLotCount + nextLotCount); i++)
+						   {
+							 var j = i+1;
+
+							 var lastIndex=(previousLotCount + nextLotCount)-1;
+							 if(i==lastIndex)
+								 {
+#>			 
+									   <tr>
+									
+									   <td align="center" style="border-right:1px black solid; width:5%">
+									<span style="font-size:20px;"><#= j #></span>
+								</td>
+								<td style="border-right:1px black solid;  width:55%;">
+									<span style="font-size:18px; font-family:<#= FontFamily #>;"> <#= this.TTfileDict.Candidate[i].CandidateNameOL #> </span><br/>
+									<span style="font-size:11px; line-height:0.5 ;font-family:<#= FontFamily #>;"><#= this.TTfileDict.Candidate[i].PartyNameOL #></span><br/>
+									<span style="font-size:22px; margin-top:5px;"><#= this.TTfileDict.Candidate[i].CandidateNameENG #></span><br/>
+									<span style="font-size:15px;"><#= this.TTfileDict.Candidate[i].PartyNameENG #></span><br/>
+								</td>
+								<#
+								if(this.TTfileDict.Candidate[i].CandidatePhoto.Length > 1)
+								{
+								#>
+									<td style="border-right:1px black solid;  width:20%;" align="center">
+										<img id="blah" src="<#= "data:image/jpg;base64," + Convert.ToBase64String(this.TTfileDict.Candidate[i].CandidatePhoto) #>" alt="your image" style="height: 96px; width: 74px;" />
+									</td>
+								<#
+								}
+								else
+								{#>
+									<td style="border-right:1px black solid;  width:20%; height:96px;">&nbsp;</td>
+								<#
+								}
+								#>
+								<td style=" width:20%">
+								</td>
+									   </tr>
+<#	   
+								   }
+								 else
+								   {				 
+#>
+									 <tr>
+									 
+									   <td align="center" style="border-right:1px black solid; border-bottom:5px solid black; width:5%">
+									    <span style="font-size:20px;"><#= j #></span>
+								      </td>
+								    <td style="border-right:1px black solid; border-bottom:5px solid black; width:55%;">
+									<span style="font-size:18px; font-family:<#= FontFamily #>;"> <#= this.TTfileDict.Candidate[i].CandidateNameOL #> </span><br/>
+									<span style="font-size:11px; line-height:0.5 ;font-family:<#= FontFamily #>;"><#= this.TTfileDict.Candidate[i].PartyNameOL #></span><br/>
+									<span style="font-size:22px; margin-top:5px;"><#= this.TTfileDict.Candidate[i].CandidateNameENG #></span><br/>
+									<span style="font-size:15px;"><#= this.TTfileDict.Candidate[i].PartyNameENG #></span><br/>
+								</td>
+								<#
+								if(this.TTfileDict.Candidate[i].CandidatePhoto.Length > 1)
+								{
+								#>
+									<td style="border-right:1px black solid; border-bottom:5px solid black; width:20%;" align="center">
+										<img id="blah" src="<#= "data:image/jpg;base64," + Convert.ToBase64String(this.TTfileDict.Candidate[i].CandidatePhoto) #>" alt="your image" style="height: 96px; width: 74px;" />
+									</td>
+								<#
+								}
+								else
+								{#>
+									<td style="border-right:1px black solid; border-bottom:5px solid black; width:20%; height:96px;">&nbsp;</td>
+								<#
+								}
+								#>
+								<td style="border-bottom:5px solid black; width:20%">
+								</td>
+							 </tr> 
+
+<#
+								   }
+							 
+	
+						   }
+#>
+						
+						</table>
+
+<#
+						previousLotCount = previousLotCount + 9;
+						nextLotCount = nextLotCount - 9;
+
+					   
+					   }                                                          
+
+				   
+				 }                                                              
+            }                                                                    
+	}                                                                         
+	
+
+#>
+
+
+
+
+</body>
+
+
+</html>

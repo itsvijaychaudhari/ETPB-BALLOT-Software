@@ -1,0 +1,43 @@
+﻿<Application x:Class="ETPB_BALLOT_Software.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:ETPB_BALLOT_Software"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <!--<LinearGradientBrush x:Key="GrayBlueGardientBrush" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#FF4500" Offset="0"/>
+            <GradientStop Color="#EDEDED" Offset="0.5"/>
+            <GradientStop Color="#008B00" Offset="1"/>
+        </LinearGradientBrush>
+
+
+        <Style TargetType="{x:Type Button}" x:Key="BtnAll">
+            <Setter Property="Content" Value="Update"/>
+            <Setter Property="Background" Value="{StaticResource GrayBlueGardientBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Ellipse Stroke="Black"  StrokeThickness="0">
+                            <Ellipse.Fill>
+                                <RadialGradientBrush>
+                                    <GradientStop Offset="0"  Color="#004f99" />
+                                    <GradientStop Offset="1"   Color="#004f99" />
+                                    <GradientStop Offset="1"   Color="#004f99" />
+                                    <RadialGradientBrush.Transform>
+                                        <TransformGroup>
+                                            <ScaleTransform ScaleY="0.65" />
+                                        </TransformGroup>
+                                    </RadialGradientBrush.Transform>
+                                </RadialGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>-->
+
+    
+
+      
+    </Application.Resources>
+</Application>
