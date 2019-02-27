@@ -31,7 +31,7 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Image Grid.Row="0"  HorizontalAlignment="Center" Source="/images/eci_logo_01.jpg" Margin="0,0,0,10" Height="60" Width="1050" VerticalAlignment="Top" Stretch="Fill"/>
+        <Image Grid.Row="0" Visibility="Collapsed" HorizontalAlignment="Center" Source="/images/eci_logo_01.jpg" Margin="0,0,0,10" Height="60" Width="1050" VerticalAlignment="Top" Stretch="Fill"/>
 
         <DockPanel Grid.Row="1" Background="Transparent">
             <TextBlock DockPanel.Dock="Left"  Margin="20,0,0,0"><Hyperlink Name="AddDetailLink" FontSize="20" Click="hyperLink_click"> Add Master Ballot Details</Hyperlink>
@@ -42,7 +42,7 @@
         </DockPanel>
 
 
-        <Image Grid.Row="2" Source="images/slider-bg-1.jpg" Height="150" Width="1000" Stretch="Fill" Margin="10,10,10,0"/>
+        <Image Grid.Row="2" Source="images/slider-bg-1.jpg" Height="230" Width="1000" Stretch="Fill" Margin="10,10,10,0"/>
         <Border BorderThickness="1" Grid.Row="2" BorderBrush="RoyalBlue" Width="1000"  CornerRadius="5" Margin="10,10,10,0" Background="SlateGray" Visibility="Hidden" Name="AddMasterBallot">
             <Grid >
                 <Grid.RowDefinitions>

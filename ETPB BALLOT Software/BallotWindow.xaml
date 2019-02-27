@@ -201,9 +201,9 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Image Grid.Row="0"  HorizontalAlignment="Center" Source="/images/eci_logo_01.jpg" Margin="0,0,0,10" Height="50" Width="1000" VerticalAlignment="Top" Stretch="Fill"/>
+        <Image Grid.Row="0" Visibility="Collapsed" HorizontalAlignment="Center" Source="/images/eci_logo_01.jpg" Margin="0,0,0,10" Height="50" Width="1000" VerticalAlignment="Top" Stretch="Fill"/>
 
-        <Border BorderThickness="1" Grid.Row="1" BorderBrush="RoyalBlue"   CornerRadius="15" Margin="5,0,5,0" Background="White">
+        <Border BorderThickness="1" Grid.Row="1" BorderBrush="RoyalBlue"   CornerRadius="15" Margin="5,20,5,0" Background="White">
             <StackPanel Height="30" >
                 <Grid>
                     <Grid.RowDefinitions>
@@ -358,7 +358,7 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
-                <DataGrid  Margin="7,5,7,4" SelectionUnit="Cell" Name="dgCandidate" Height="208" BorderBrush="Black" BorderThickness="2" Background="LightGray" AutoGenerateColumns="False"  CanUserAddRows="False"  ColumnHeaderHeight="40" LoadingRow="FnFormsDatagridLoadingRow"  ItemsSource="{Binding}" >
+                <DataGrid  Margin="7,5,7,4" SelectionUnit="Cell" Name="dgCandidate" Height="248" BorderBrush="Black" BorderThickness="2" Background="LightGray" AutoGenerateColumns="False"  CanUserAddRows="False"  ColumnHeaderHeight="40" LoadingRow="FnFormsDatagridLoadingRow"  ItemsSource="{Binding}" >
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Candidate Name(in english)"    Width="180" HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=CandidateNameENG}" />
                         <DataGridTextColumn Header="Candidate Name(in official)"   Width="180" HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=CandidateNameOL}"/>
@@ -368,7 +368,7 @@
                         <DataGridTemplateColumn Header="Candidate photo"  Width="150" HeaderStyle="{StaticResource dataGridHeader}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Image Name="imgCandidate" Width="94" Height="76" HorizontalAlignment="Center" VerticalAlignment="Center" Source="{Binding Path=CandidatePhoto}"/>
+                                    <Image Name="imgCandidate" Width="94" Height="80" HorizontalAlignment="Center" VerticalAlignment="Center" Source="{Binding Path=CandidatePhoto}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
