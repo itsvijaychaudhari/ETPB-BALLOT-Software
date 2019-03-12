@@ -8,6 +8,19 @@
          Title="BallotWindow" Height="670" Width="1000" WindowState="Normal"  WindowStartupLocation="CenterScreen" Icon="images/nvsp_logo.ico" Loaded="OnLoad">
 
     <Window.Resources>
+
+        <Style x:Key="DataGridContentCellCentering" TargetType="{x:Type DataGridCell}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="placeHolder" TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -239,7 +252,7 @@
         </DockPanel >
 
         <Border BorderThickness="1" Grid.Row="3" BorderBrush="RoyalBlue"   CornerRadius="15" Margin="5,0,5,0" Background="White">
-      
+
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
@@ -266,7 +279,7 @@
                     <Image Source="images/Hardware-Keyboard.ico" Height="45" Width="50" Stretch="Fill" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Button>
             </Grid>
-   
+
         </Border>
 
         <Border BorderThickness="1" Grid.Row="4" BorderBrush="RoyalBlue"   CornerRadius="15" Margin="5,5,5,0" Background="SlateGray">
@@ -354,18 +367,39 @@
 
         <Border BorderThickness="1" Grid.Row="5" BorderBrush="RoyalBlue"   CornerRadius="15" Margin="5,5,5,0" Background="SlateGray">
             <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="355*"/>
+                    <ColumnDefinition Width="628*"/>
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
-                <DataGrid  Margin="7,5,7,4" SelectionUnit="Cell" Name="dgCandidate" Height="248" BorderBrush="Black" BorderThickness="2" Background="LightGray" AutoGenerateColumns="False"  CanUserAddRows="False"  ColumnHeaderHeight="40" LoadingRow="FnFormsDatagridLoadingRow"  ItemsSource="{Binding}" >
+                <DataGrid  
+                    Margin="7,5,7.4,4.6" 
+                    CellStyle="{StaticResource DataGridContentCellCentering}" 
+                    SelectionUnit="Cell" 
+                    Name="dgCandidate" 
+                    CanUserReorderColumns="False" 
+                    CanUserSortColumns="False" 
+                    Height="248" 
+                    BorderBrush="Black" 
+                    BorderThickness="2" 
+                    Background="LightGray" 
+                    AutoGenerateColumns="False"  
+                    CanUserAddRows="False"  
+                    ColumnHeaderHeight="40" 
+                    LoadingRow="FnFormsDatagridLoadingRow"  
+                    ItemsSource="{Binding}" Grid.ColumnSpan="2" >
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Candidate Name(in english)"    Width="180" HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=CandidateNameENG}" />
-                        <DataGridTextColumn Header="Candidate Name(in official)"   Width="180" HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=CandidateNameOL}"/>
-                        <DataGridTextColumn Header="Party Affiliation(in english)"  Width="120" HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=PartyNameENG}"/>
-                        <DataGridTextColumn Header="Party Affiliation(in official)"  Width="120" HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=PartyNameOL}"/>
+                        <DataGridTextColumn Header="Is NOTA" Visibility="Collapsed"  Binding="{Binding Path=ISNOTA}" />
+                        <DataGridTextColumn Header="SR No [Form7A]"  FontSize="15" CanUserSort="False"  HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=CandidateNO}" />
+                        <DataGridTextColumn Header="Candidate Name(ENG)" CanUserSort="False" IsReadOnly="True"  HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=CandidateNameENG}" />
+                        <DataGridTextColumn Header="Candidate Name(Official)" CanUserSort="False" IsReadOnly="True"   HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=CandidateNameOL}"/>
+                        <DataGridTextColumn Header="Party Affiliation(ENG)" CanUserSort="False" IsReadOnly="True"  HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=PartyNameENG}"/>
+                        <DataGridTextColumn Header="Party Affiliation(Official)" CanUserSort="False" IsReadOnly="True"  HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=PartyNameOL}"/>
 
-                        <DataGridTemplateColumn Header="Candidate photo"  Width="150" HeaderStyle="{StaticResource dataGridHeader}">
+                        <DataGridTemplateColumn Header="Candidate photo" CanUserSort="False"  HeaderStyle="{StaticResource dataGridHeader}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Image Name="imgCandidate" Width="94" Height="80" HorizontalAlignment="Center" VerticalAlignment="Center" Source="{Binding Path=CandidatePhoto}"/>
@@ -373,7 +407,7 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn  Header="Edit" Width="90" HeaderStyle="{StaticResource dataGridHeader}">
+                        <DataGridTemplateColumn  Header="Edit" CanUserSort="False"  HeaderStyle="{StaticResource dataGridHeader}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -385,7 +419,7 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Header="Delete" Width="90" HeaderStyle="{StaticResource dataGridHeader}">
+                        <DataGridTemplateColumn Header="Delete"  CanUserSort="False" HeaderStyle="{StaticResource dataGridHeader}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -401,7 +435,7 @@
                 </DataGrid>
 
 
-                <Button Grid.Row="1" Name="btnSaveBallot" Click="btnSaveBallot_Click" Content="Save Ballot" Height="60" Width="Auto" Margin="440,0,416,5" Foreground="Black" Style="{StaticResource EffectiveButton}" FontSize="15"/>
+                <Button Grid.Row="1" Name="btnSaveBallot" Click="btnSaveBallot_Click" Content="Save Ballot" Height="60" Width="Auto" Margin="85.182,0.4,416.4,5.2" Foreground="Black" Style="{StaticResource EffectiveButton}" FontSize="15" Grid.Column="1"/>
                 <!--<DockPanel Grid.Row="1">
                     <Button DockPanel.Dock="Left" Content="Save Ballot" Height="30" Width="90" Margin="300,10,0,10" Foreground="Black" Style="{StaticResource BtnSubmit}"  />
                     <Button DockPanel.Dock="Right" Content="Save PDF" Height="30" Width="90" Margin="0,10,0,10" Foreground="Black"  Style="{StaticResource BtnSubmit}" />

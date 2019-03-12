@@ -65,9 +65,6 @@ namespace ETPB_BALLOT_Software
             backgroundWorker1.RunWorkerCompleted += BackgroundWorker1_RunWorkerCompleted;
         }
 
-
-
-
         private void On_Load(object sender, RoutedEventArgs e)
         {
             backgroundWorker1.RunWorkerAsync();

@@ -53,6 +53,8 @@ namespace ETPB_BALLOT_Software
         public string strConstType;
         public string lang_Official;
 
+        
+
         CandidateDetails.BallotCandidateList ballotCandidateList = new BallotCandidateList();
         Dictionary<int, CandidateRecord> TTfileDict = new Dictionary<int, CandidateRecord>();
 
@@ -131,6 +133,9 @@ namespace ETPB_BALLOT_Software
 
                 if (lastRow["ISNOTA"] != DBNull.Value &&  Convert.ToInt32(lastRow["ISNOTA"]) == 1 )
                 {
+                    chkNotaBox.IsChecked = true;
+                   
+                    chkNotaBox.IsEnabled = false;
                     btn_Submit.IsEnabled = false;
                     btn_reset.IsEnabled = false;
                 }
@@ -153,6 +158,7 @@ namespace ETPB_BALLOT_Software
             {
                 list.Add(new CandidateRecord()
                 {
+                    ISNOTA = Convert.ToInt32(row["ISNOTA"]) ,
                     DetailBallotID = Convert.ToInt32(row["DETAILBALLOTID"]),
                     BallotID = Convert.ToInt32(row["BALLOTID"]),
                     CandidateNO = Convert.ToInt32(row["CANDIDATESLNO"]),
@@ -248,7 +254,15 @@ namespace ETPB_BALLOT_Software
                     #region For English
                     if (chkNotaBox.IsChecked == true)
                     {
+                        //Try to add NOTA as 1st record --vijay
+                        if (CandidateNoToInsert == 1)
                         {
+                            System.Windows.Forms.MessageBox.Show("You cannot at NOTA as 1st record..!", "Warning");
+                            
+                        }
+                        else
+                        {
+                            
                             using (sqlite_cmd = new SQLiteCommand(commandstring, sqlite_conn))
                             {
                                 sqlite_cmd.Parameters.AddWithValue("DETAILBALLOTID", DetailBallotIdToInsert);
@@ -265,6 +279,10 @@ namespace ETPB_BALLOT_Software
                                 if (result > 0)
                                 {
                                     MessageBox.Show("Ballot Details inserted");
+                                    // --vijay
+                                    txt_EnglishName.Text = "";
+                                    txt_RegionalName.Text = "";
+                                    //-----------------------
                                     GenerateGrid();
                                   //  Reset();
                                 }
@@ -345,7 +363,15 @@ namespace ETPB_BALLOT_Software
                     #region For All
                     if (chkNotaBox.IsChecked == true)
                     {
+                        //Try to insert NOTA as 1st record   --vijay
+                        if (CandidateNoToInsert == 1)
                         {
+                            System.Windows.Forms.MessageBox.Show("You cannot at NOTA as 1st record..!","Warning");
+                           
+                        }
+                        else
+                        {
+                           
                             using (sqlite_cmd = new SQLiteCommand(commandstring, sqlite_conn))
                             {
                                 sqlite_cmd.Parameters.AddWithValue("DETAILBALLOTID", DetailBallotIdToInsert);
@@ -362,6 +388,10 @@ namespace ETPB_BALLOT_Software
                                 if (result > 0)
                                 {
                                     MessageBox.Show("Ballot Details inserted");
+                                    // --vijay
+                                    txt_EnglishName.Text = "";
+                                    txt_RegionalName.Text = "";
+                                    //-----------------------
                                     GenerateGrid();
                                    // Reset();
                                 }
@@ -443,6 +473,7 @@ namespace ETPB_BALLOT_Software
                 // Last record should be NOTA........................... After NOTA disable Submit button
                 if (chkNotaBox.IsChecked == true)
                 {
+                    chkNotaBox.IsEnabled = false;
                     btn_Submit.IsEnabled = false;
                     btn_reset.IsEnabled = false;
                 }
@@ -636,6 +667,7 @@ namespace ETPB_BALLOT_Software
             txt_RegionalName.Text = String.Empty;
             txt_EnglishPartyName.Text = String.Empty;
             txt_RegionalPartyName.Text = String.Empty;
+
             chkNotaBox.IsChecked = false;
             chkNoPhoto.IsChecked = false;
             photo_img.Source = null;
@@ -1133,6 +1165,12 @@ namespace ETPB_BALLOT_Software
             {
                 if (candidateRecord.PartyNameENG=="" && candidateRecord.PartyNameOL=="")
                 {
+                    // --vijay
+                    txt_EnglishName.Text = "";
+                    txt_RegionalName.Text = "";
+                    chkNotaBox.IsChecked = false;
+                    chkNotaBox.IsEnabled = true;
+                    //-----------------
                     btn_Submit.IsEnabled = true;
                     btn_reset.IsEnabled = true;
                 }
