@@ -84,7 +84,8 @@ namespace ETPB_BALLOT_Software
             try
             {
 
-                Dispatcher.Invoke(() => { ProcessWindow.Visibility = Visibility.Visible; }, System.Windows.Threading.DispatcherPriority.ContextIdle);
+                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                    (Action) (() => { ProcessWindow.Visibility = Visibility.Visible; }));
                 transProvider = new TransliterationProvider();
             }
             catch
@@ -99,7 +100,7 @@ namespace ETPB_BALLOT_Software
             {
                 System.Windows.Forms.MessageBox.Show("Error while loading tranliteration module...");
             }
-            Dispatcher.Invoke(() => { ProcessWindow.Visibility = Visibility.Collapsed; }, System.Windows.Threading.DispatcherPriority.ContextIdle);
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,(Action)(() => { ProcessWindow.Visibility = Visibility.Collapsed; }));
         }
 
 
@@ -379,7 +380,7 @@ namespace ETPB_BALLOT_Software
                 int result = sqlite_cmd.ExecuteNonQuery();
                 if (result > 0)
                 {
-                    MessageBox.Show("Master record inserted");
+                    //MessageBox.Show("Master record inserted");
                     GenerateGrid();
                     //DisableAddBallot();
                     Reset();
@@ -532,7 +533,6 @@ namespace ETPB_BALLOT_Software
 
         private void deleteRow(int ballotId)  //gets called in  dgBallotMaster_SelectedCellsChanged
         {
-
             sqlite_conn = SqLite.OpenSQLLiteConnection(sqlite_conn);
             string cmdDeletestring = "Delete from MASTERBALLOT where Ballot_ID = " + ballotId + " ;";
             sqlite_cmd = sqlite_conn.CreateCommand();
@@ -553,6 +553,8 @@ namespace ETPB_BALLOT_Software
 
         private void btn_edit_Click(object sender, RoutedEventArgs e)
         {
+
+
             BallotData ballotData = ((FrameworkElement)sender).DataContext as BallotData;
             btnUpdate.IsEnabled = true;
             btnMasterDetails.IsEnabled = false;

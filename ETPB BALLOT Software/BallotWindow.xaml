@@ -8,6 +8,13 @@
          Title="BallotWindow" Height="670" Width="1000" WindowState="Normal"  WindowStartupLocation="CenterScreen" Icon="images/nvsp_logo.ico" Loaded="OnLoad">
 
     <Window.Resources>
+        <Style TargetType="{x:Type Button}">
+            <Style.Triggers>
+                <Trigger Property="Control.IsEnabled" Value="false">
+                    <Setter Property="Control.Opacity" Value="0.5" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
         <Style x:Key="DataGridContentCellCentering" TargetType="{x:Type DataGridCell}">
             <Setter Property="Template">
@@ -131,6 +138,12 @@
                 </Setter.Value>
 
             </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="Button.IsEnabled" Value="False">
+                    <Setter Property="Button.Opacity" Value="0.5" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
         <Style TargetType="{x:Type Button}" x:Key="BtnSubmit">
@@ -199,6 +212,11 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            <Style.Triggers>
+                <Trigger Property="Button.IsEnabled" Value="False">
+                    <Setter Property="Button.Opacity" Value="0.5" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
 
@@ -266,9 +284,9 @@
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <CheckBox Grid.Row="0" Grid.Column="0" Content="Check here to add NOTA" Name="chkNotaBox" Margin="20,10,0,0" Width="170" Checked="Oncheck" Unchecked="OnUncheck"/>
-                <CheckBox Grid.Row="0" Grid.Column="1" Content="Check here if Candidate doesn't have photo" Name="chkNoPhoto" Margin="10,10,0,0" Checked="Oncheck" Unchecked="OnUncheck" Width="270"/>
-                <CheckBox Grid.Row="0" Grid.Column="2" Content="Check here to change font" Name="chkfont" Margin="10,10,0,0" Checked="Oncheck" Unchecked="OnUncheck" Width="160"/>
+                <CheckBox Grid.Row="0" Grid.Column="0" Content="Check here to add NOTA" Name="chkNotaBox" Margin="20,10,0,0" Width="170" Click="CheckBox_Click" />
+                <CheckBox Grid.Row="0" Grid.Column="1" Content="Check here if Candidate doesn't have photo" Name="chkNoPhoto" Margin="10,10,0,0" Click="CheckBox_Click"  Width="270"/>
+                <CheckBox Grid.Row="0" Grid.Column="2" Content="Check here to change font" Name="chkfont" Margin="10,10,0,0" Click="CheckBox_Click"  Width="160"/>
                 <ComboBox  Grid.Row="0" Grid.Column="3" Width="200" Height="25" Margin="15,0,0,0" Name="cmbfont" SelectionChanged="cmbfont_SelectionChanged" IsEnabled="False" />
 
 
@@ -343,7 +361,7 @@
                             <DropShadowBitmapEffect Color="Black" Direction="320" ShadowDepth="15" Softness="1" Opacity="0.5"/>
                         </Button.BitmapEffect>
                     </Button>
-                    <Button Grid.Row="0" Grid.Column="1" Width="90" Margin="10,0,0,10" Height="25" Content="Update"  Style="{StaticResource buttonHover}" Name="btn_Update" Click="btn_Update_Click" FontSize="13">
+                    <Button Grid.Row="0" Grid.Column="1" IsEnabled="False" Width="90" Margin="10,0,0,10" Height="25" Content="Update"  Style="{StaticResource buttonHover}" Name="btn_Update" Click="btn_Update_Click" FontSize="13">
                         <Button.BitmapEffect>
                             <DropShadowBitmapEffect Color="Black" Direction="320" ShadowDepth="15" Softness="1" Opacity="0.5"/>
                         </Button.BitmapEffect>
@@ -390,10 +408,12 @@
                     CanUserAddRows="False"  
                     ColumnHeaderHeight="40" 
                     LoadingRow="FnFormsDatagridLoadingRow"  
-                    ItemsSource="{Binding}" Grid.ColumnSpan="2" >
+                    ItemsSource="{Binding}" Grid.ColumnSpan="2"
+                    FontSize="15">
                     <DataGrid.Columns>
+                        <!--if you change header name please change LINQ in onload method that enable disable column for english and other language-->
                         <DataGridTextColumn Header="Is NOTA" Visibility="Collapsed"  Binding="{Binding Path=ISNOTA}" />
-                        <DataGridTextColumn Header="SR No [Form7A]"  FontSize="15" CanUserSort="False"  HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=CandidateNO}" />
+                        <DataGridTextColumn Header="SR No [Form7A]"  Visibility="Collapsed" x:Name="Col_SRForm7A" CanUserSort="False"  HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=CandidateNO}" />
                         <DataGridTextColumn Header="Candidate Name(ENG)" CanUserSort="False" IsReadOnly="True"  HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=CandidateNameENG}" />
                         <DataGridTextColumn Header="Candidate Name(Official)" CanUserSort="False" IsReadOnly="True"   HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=CandidateNameOL}"/>
                         <DataGridTextColumn Header="Party Affiliation(ENG)" CanUserSort="False" IsReadOnly="True"  HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=PartyNameENG}"/>
@@ -435,11 +455,26 @@
                 </DataGrid>
 
 
-                <Button Grid.Row="1" Name="btnSaveBallot" Click="btnSaveBallot_Click" Content="Save Ballot" Height="60" Width="Auto" Margin="85.182,0.4,416.4,5.2" Foreground="Black" Style="{StaticResource EffectiveButton}" FontSize="15" Grid.Column="1"/>
+                <Button Grid.Row="1" Name="btnSaveBallot" IsEnabled="False"  Click="btnSaveBallot_Click" Content="Save Ballot" Height="60" Width="Auto" Margin="85.182,0.4,416.4,5.2" Foreground="Black" Style="{StaticResource EffectiveButton}" FontSize="15" Grid.Column="1">
+                   
+                </Button>
                 <!--<DockPanel Grid.Row="1">
                     <Button DockPanel.Dock="Left" Content="Save Ballot" Height="30" Width="90" Margin="300,10,0,10" Foreground="Black" Style="{StaticResource BtnSubmit}"  />
                     <Button DockPanel.Dock="Right" Content="Save PDF" Height="30" Width="90" Margin="0,10,0,10" Foreground="Black"  Style="{StaticResource BtnSubmit}" />
                 </DockPanel>-->
+
+                <CheckBox Grid.Row="1" IsEnabled="False" Name="chkForm7a" Margin="20" Content="Verify Serial Number According to Form 7A" Click="CheckBox_Checked">
+                    <CheckBox.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <Trigger Property="CheckBox.IsEnabled" Value="False">
+                                    <Setter Property="CheckBox.Opacity" Value="0.5"/>
+                                </Trigger>
+
+                            </Style.Triggers>
+                        </Style>
+                    </CheckBox.Style>
+                </CheckBox>
 
             </Grid>
         </Border>

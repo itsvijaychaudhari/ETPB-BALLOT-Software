@@ -68,7 +68,7 @@
                 </ComboBox>
                 <Label Grid.Row="1" Grid.Column="2" Content="Language 2" FontSize="16" Margin="30,10,0,0"  Name="lbl_language2"/>
                 <ComboBox Grid.Row="1" Grid.Column="3" Name="language2Combo"  Height="30"  Padding="5" Width="190" Margin="20,10,0,10">
-                    <ComboBoxItem Content="---Select Language---" ></ComboBoxItem>
+                    <ComboBoxItem Content="Select Language" ></ComboBoxItem>
                     <ComboBoxItem IsSelected="True" Content="English" ></ComboBoxItem>
                 </ComboBox>
 
@@ -233,8 +233,6 @@
             </Grid.RowDefinitions>
 
             <DataGrid  Margin="10,10,10,0" SelectionUnit="Cell" Name="dgBallotMaster" BorderBrush="Black" Height="250" Width="1000" BorderThickness="2" Background="LightGray" AutoGenerateColumns="False"  CanUserAddRows="False"   ItemsSource="{Binding}"   LoadingRow="FnFormsDatagridLoadingRow">
-
-
                 <DataGrid.Columns>
                     <DataGridTextColumn   Header="State"  Binding="{Binding Path=state}"  Width="200" HeaderStyle="{StaticResource dataGridHeader}"/>
                     <DataGridTextColumn Header="Constituency" Binding="{Binding Path=constituency}" Width="120" HeaderStyle="{StaticResource dataGridHeader}"/>
