@@ -409,11 +409,12 @@
                     ColumnHeaderHeight="40" 
                     LoadingRow="FnFormsDatagridLoadingRow"  
                     ItemsSource="{Binding}" Grid.ColumnSpan="2"
-                    FontSize="15">
+                    FontSize="15"
+                    CellEditEnding="DgCandidate_CellEditEnding">
                     <DataGrid.Columns>
                         <!--if you change header name please change LINQ in onload method that enable disable column for english and other language-->
                         <DataGridTextColumn Header="Is NOTA" Visibility="Collapsed"  Binding="{Binding Path=ISNOTA}" />
-                        <DataGridTextColumn Header="SR No [Form7A]"  Visibility="Collapsed" x:Name="Col_SRForm7A" CanUserSort="False"  HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=CandidateNO}" />
+                        <DataGridTextColumn Header="SR No [Form7A]"  Visibility="Collapsed" x:Name="Col_SRForm7A" CanUserSort="False"  HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=CandidateNO}"  />
                         <DataGridTextColumn Header="Candidate Name(ENG)" CanUserSort="False" IsReadOnly="True"  HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=CandidateNameENG}" />
                         <DataGridTextColumn Header="Candidate Name(Official)" CanUserSort="False" IsReadOnly="True"   HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=CandidateNameOL}"/>
                         <DataGridTextColumn Header="Party Affiliation(ENG)" CanUserSort="False" IsReadOnly="True"  HeaderStyle="{StaticResource dataGridHeader}" Binding="{Binding Path=PartyNameENG}"/>
