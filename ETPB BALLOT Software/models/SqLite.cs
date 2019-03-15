@@ -13,7 +13,7 @@ namespace ETPB_BALLOT_Software.models
     {
         public static SQLiteConnection OpenSQLLiteConnection(SQLiteConnection sqlite_conn)
         {
-            sqlite_conn = new SQLiteConnection("Data Source=" + Directory.GetCurrentDirectory() + "\\DataBase\\RVOTE.db;Version=3;New=false;Compress=True;");
+            sqlite_conn = new SQLiteConnection("Data Source=" + Directory.GetCurrentDirectory() + "\\DataBase\\RVOTE.db;Version=3;foreign keys=true;New=false;Compress=True;");
             try
             {
                 sqlite_conn.Open();

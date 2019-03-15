@@ -107,8 +107,8 @@ namespace ETPB_BALLOT_Software
                 txt_RegionalPartyName.Text = null;
                 //dgCandidate.Columns[3].Visibility = Visibility.Hidden;
                 //dgCandidate.Columns[5].Visibility = Visibility.Hidden;
-                dgCandidate.Columns.FirstOrDefault(x => x.Header == "Candidate Name(Official)").Visibility = Visibility.Hidden;
-                dgCandidate.Columns.FirstOrDefault(x => x.Header == "Party Affiliation(Official)").Visibility = Visibility.Hidden;
+                dgCandidate.Columns.FirstOrDefault(x => (string)x.Header == "Candidate Name(Official)").Visibility = Visibility.Hidden;
+                dgCandidate.Columns.FirstOrDefault(x => (string)x.Header == "Party Affiliation(Official)").Visibility = Visibility.Hidden;
             }
             GenerateGrid();
             btn_Update.IsEnabled = false;
