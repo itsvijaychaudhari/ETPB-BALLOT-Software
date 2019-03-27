@@ -16,6 +16,8 @@ namespace ETPB_BALLOT_Software.models
             sqlite_conn = new SQLiteConnection("Data Source=" + Directory.GetCurrentDirectory() + "\\DataBase\\RVOTE.db;Version=3;foreign keys=true;New=false;Compress=True;");
             try
             {
+                //win+alt+11 12 13 14 15
+                
                 sqlite_conn.Open();
             }
             catch (Exception ex)

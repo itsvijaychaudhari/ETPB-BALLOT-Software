@@ -11,11 +11,14 @@ namespace ETPB_BALLOT_Software.models
         public Dictionary<string, string> LanguageDict;
         public Dictionary<string, string> StateLanguageDict;
 
+        //added by vijay if user does not want state and language mapping 
+        public Dictionary<string, string> LangMapedWithLocaleDict;
+
         public LanguageCode()
         {
             LanguageDict = new Dictionary<string, string>()
             {
-                 {"U01" , "hi_in"},
+                    {"U01" , "hi_in"},
                     {"S02" , ""},
                     {"S01" , "tl_in"},
                     {"S03" , "as_in"},
@@ -51,12 +54,11 @@ namespace ETPB_BALLOT_Software.models
                     {"S24" , "hi_in"},
                     {"S28" , "hi_in"},
                     {"S25" , "bn_in"}
-
             };
 
             StateLanguageDict = new Dictionary<string, string>()
             {
-                {"U01" , "Hindi"},
+                    {"U01" , "Hindi"},
                     {"S02" , "English"},
                     {"S01" , "Telugu"},
                     {"S03" , "Assamese"},
@@ -94,13 +96,24 @@ namespace ETPB_BALLOT_Software.models
                     {"S25" , "Bengali"}
             };
 
+
+            LangMapedWithLocaleDict = new Dictionary<string, string>()
+            {
+                {"Hindi"    , "hi_in"},
+                {"English"  , ""},
+                {"Telugu"   , "tl_in"},
+                {"Assamese" , "as_in"},
+                {"Gujarati" , "gj_in"},
+                {"Kokani"   , "hi_in"},
+                {"Urdu"     , "ur_in"},
+                {"Kannada"  , "kn_in"},
+                {"Malayalam", "ml_in"},
+                {"Marathi"  , "mr_in"},
+                {"Bengali"  , "bn_in"},
+                {"Oriya"    , "or_in"},
+                {"Tamil"    , "tm_in"},
+                {"Punjabi"  , "pn_in"}
+            };
         }
-
-
-
-
-
-
-
     }
 }

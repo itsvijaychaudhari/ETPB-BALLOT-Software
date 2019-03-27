@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace ETPB_BALLOT_Software.models
 {
@@ -32,7 +33,7 @@ namespace ETPB_BALLOT_Software.models
                 catch (Exception ex)
                 {
 
-                    string msg = ex.Message;
+                    MessageBox.Show(ex.Message);
                 }
             }
 

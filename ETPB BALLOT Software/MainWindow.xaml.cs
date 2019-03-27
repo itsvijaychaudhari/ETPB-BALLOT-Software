@@ -39,12 +39,12 @@ namespace ETPB_BALLOT_Software
 
         #endregion
 
-        BackgroundWorker backgroundWorker1;
-        SQLiteConnection sqlite_conn = new SQLiteConnection();
-        SQLiteCommand sqlite_cmd;
-        int ballotIdToUpdate;
-        public static TransliterationProvider transProvider = null; 
-        LanguageCode langCode = new LanguageCode();
+        private BackgroundWorker backgroundWorker1;
+        private SQLiteConnection sqlite_conn = new SQLiteConnection();
+        private SQLiteCommand sqlite_cmd;
+        private int ballotIdToUpdate;
+        public static TransliterationProvider transProvider = null;
+        private LanguageCode langCode = new LanguageCode();
         // public static string locale = null;
 
         public MainWindow()
@@ -57,30 +57,33 @@ namespace ETPB_BALLOT_Software
 
         private void On_Load(object sender, RoutedEventArgs e)
         {
+            //sqlite_conn = new SQLiteConnection("Data Source=" + Directory.GetCurrentDirectory() + "\\DataBase\\RVOTE.db;Version=3;foreign keys=true;New=false;Compress=True;");
+            //sqlite_conn.SetPassword("123");
+            //sqlite_conn.Open();
+           
             backgroundWorker1.RunWorkerAsync();
-            Get_All_States();
-            stateCombo.SelectedIndex = 0;
-            Get_All_Languages();
-            language1Combo.SelectedIndex = 0;
-            GetAllConstuency();
-            constituencyCombo.SelectedIndex = 0;
-            language2Combo.SelectedIndex = 1;
-            GenerateGrid();
-            btnUpdate.IsEnabled = false;
         }
 
         private void BackgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             try
             {
-
+                //Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                //    (Action)(() => { Title = "ETPBS " + typeof(MainWindow).Assembly.GetName().Version; }));
                 Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
-                    (Action) (() => { ProcessWindow.Visibility = Visibility.Visible; }));
+                    (Action)(() => { ProcessWindow.Visibility = Visibility.Visible; }));
+
+                Get_All_States();
+                Get_All_Languages();
+                GetAllConstuency();
+                GenerateGrid();
+
                 transProvider = new TransliterationProvider();
+                
             }
             catch
             {
-                e.Result = false;
+                throw;
             }
         }
 
@@ -90,7 +93,7 @@ namespace ETPB_BALLOT_Software
             {
                 System.Windows.Forms.MessageBox.Show("Error while loading tranliteration module...");
             }
-            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,(Action)(() => { ProcessWindow.Visibility = Visibility.Collapsed; }));
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (Action)(() => { ProcessWindow.Visibility = Visibility.Collapsed; }));
         }
 
 
@@ -101,16 +104,20 @@ namespace ETPB_BALLOT_Software
             {
                 string StateJsonPath = streamReader.ReadToEnd();
                 Dictionary<string, string> itemstates = JsonConvert.DeserializeObject<Dictionary<string, string>>(StateJsonPath);
-                var list = itemstates.Keys.ToList();
+                List<string> list = itemstates.Keys.ToList();
 
-                stateCombo.DisplayMemberPath = "state_display";
-                stateCombo.SelectedValuePath = "ST_CODE";
+                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                    (Action)(() =>
+                         {
+                             stateCombo.DisplayMemberPath = "state_display";
+                             stateCombo.SelectedValuePath = "ST_CODE";
 
-                stateCombo.Items.Add(new { ST_CODE = "select", state_display = "---Select State---" });
-                foreach (var item in list)
-                {
-                    stateCombo.Items.Add(new { ST_CODE = item, state_display = itemstates[item] + "(" + item + ")" });
-                }
+                             stateCombo.Items.Add(new { ST_CODE = "select", state_display = "---Select State---" });
+                             foreach (string item in list)
+                             {
+                                 stateCombo.Items.Add(new { ST_CODE = item, state_display = itemstates[item] + "(" + item + ")" });
+                             }
+                         }));
             }
         }
 
@@ -206,16 +213,20 @@ namespace ETPB_BALLOT_Software
             {
                 string StateJsonPath = streamReader.ReadToEnd();
                 Dictionary<string, string> itemstates = JsonConvert.DeserializeObject<Dictionary<string, string>>(StateJsonPath);
-                var list = itemstates.Keys.ToList();
+                List<string> list = itemstates.Keys.ToList();
 
-                language1Combo.DisplayMemberPath = "language_display";
-                language1Combo.SelectedValuePath = "Lang_CODE";
+                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                    (Action)(() =>
+                          {
+                              language1Combo.DisplayMemberPath = "language_display";
+                              language1Combo.SelectedValuePath = "Lang_CODE";
 
-                language1Combo.Items.Add(new { Lang_CODE = "select", language_display = "---Select Language---" });
-                foreach (var item in list)
-                {
-                    language1Combo.Items.Add(new { Lang_CODE = item, language_display = itemstates[item] });
-                }
+                              language1Combo.Items.Add(new { Lang_CODE = "select", language_display = "---Select Language---" });
+                              foreach (string item in list)
+                              {
+                                  language1Combo.Items.Add(new { Lang_CODE = item, language_display = itemstates[item] });
+                              }
+                          }));
             }
 
             //DataTable dt = new DataTable();
@@ -299,14 +310,21 @@ namespace ETPB_BALLOT_Software
             DataRow dr = dt.NewRow();
             dr.ItemArray = new object[] { 0, "---Select Constituency---" };
             dt.Rows.InsertAt(dr, 0);
-            constituencyCombo.DisplayMemberPath = "ConstituencyText";
-            constituencyCombo.SelectedValuePath = "ConstituencyType";
-            constituencyCombo.ItemsSource = dt.DefaultView;
+
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                (Action)(() =>
+                {
+                    constituencyCombo.DisplayMemberPath = "ConstituencyText";
+                    constituencyCombo.SelectedValuePath = "ConstituencyType";
+                    constituencyCombo.ItemsSource = dt.DefaultView;
+                }));
+
+
         }
 
         private void GenerateGrid()  // retrieves all record from MASTERBALLOT table and binds to datagrid
         {
-            var list = new List<BallotData>();
+            List<BallotData> list = new List<BallotData>();
 
             // dgBallotMaster.ItemsSource = null;
 
@@ -331,7 +349,7 @@ namespace ETPB_BALLOT_Software
                 });
 
             }
-            dgBallotMaster.ItemsSource = list;
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (Action)(() => { dgBallotMaster.ItemsSource = list; }));
             SqLite.CloseSQLLiteConnection(sqlite_conn);
         }
 
@@ -384,7 +402,7 @@ namespace ETPB_BALLOT_Software
 
                 sqlite_cmd.Dispose();
                 SqLite.CloseSQLLiteConnection(sqlite_conn);
-                this.AddMasterBallot.Visibility = System.Windows.Visibility.Hidden;
+                AddMasterBallot.Visibility = System.Windows.Visibility.Hidden;
 
 
             }
@@ -410,11 +428,12 @@ namespace ETPB_BALLOT_Software
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             Reset();
-            this.AddMasterBallot.Visibility = System.Windows.Visibility.Hidden;
+            AddMasterBallot.Visibility = System.Windows.Visibility.Hidden;
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
+            string command = string.Empty;
             if (constituencyCombo.SelectedIndex <= 0 || stateCombo.SelectedIndex <= 0 || language1Combo.SelectedIndex <= 0 || language2Combo.SelectedIndex <= 0)
             {
                 MessageBox.Show("Please select record from table to update.");
@@ -425,29 +444,82 @@ namespace ETPB_BALLOT_Software
                 object state = stateCombo.SelectedItem?.GetType().GetProperty("state_display")?.GetValue(stateCombo.SelectedItem, null);
                 string empty = "";
                 string lang2 = (string)((ComboBoxItem)language2Combo.SelectedValue).Content;
+
+                //check candidate record associated with current record is NOT empty or warn user not to update or delete
                 sqlite_conn = SqLite.OpenSQLLiteConnection(sqlite_conn);
                 sqlite_cmd = sqlite_conn.CreateCommand();
-                string commandstring = "Update MASTERBALLOT set ELECTION_FOR='" + constituencyCombo.SelectedValue.ToString() + "',STATE_CODE='" +
-                                   state.ToString() + "',LANGUAGE_1='" +
-                                   language1Combo.SelectedValue.ToString() + "',LANGUAGE_2='" + lang2 + "',IS_FINALIZED ='N',FINALIZATION_DATE='" + empty + "' where BALLOT_ID =" + ballotIdToUpdate;
-                sqlite_cmd.CommandText = commandstring;
-                int n = sqlite_cmd.ExecuteNonQuery();
-                if (n > 0)
-                {
-                    MessageBox.Show("Master record Updated");
-                    GenerateGrid();
-                    Reset();
-                }
-
-                else
-                {
-                    MessageBox.Show("Master record Update failed");
-
-                }
-
+                command = "select COUNT(BALLOTID) from BALLOTDETAILS where BALLOTID=" + ballotIdToUpdate;
+                sqlite_cmd.CommandText = command;
+                int queryResult = Convert.ToInt32(sqlite_cmd.ExecuteScalar());
                 sqlite_cmd.Dispose();
+                command = string.Empty;
                 SqLite.CloseSQLLiteConnection(sqlite_conn);
 
+                //Candidate record found in DB
+                if (queryResult > 0)
+                {
+                    //warn
+                    MessageBoxResult result = MessageBox.Show("Updating record may cause losing Candidates Record \n Do You want to update ?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    //if want to update
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        //first delete record from BALLOTDETAILS
+                        sqlite_conn = SqLite.OpenSQLLiteConnection(sqlite_conn);
+                        sqlite_cmd = sqlite_conn.CreateCommand();
+                        command = "delete from BALLOTDETAILS where BALLOTID =" + ballotIdToUpdate;
+                        sqlite_cmd.CommandText = command;
+                        sqlite_cmd.ExecuteNonQuery();
+                        sqlite_cmd.Dispose();
+                        command = string.Empty;
+                        SqLite.CloseSQLLiteConnection(sqlite_conn);
+
+                        // and update master record
+                        sqlite_conn = SqLite.OpenSQLLiteConnection(sqlite_conn);
+                        sqlite_cmd = sqlite_conn.CreateCommand();
+                        command = "Update MASTERBALLOT set ELECTION_FOR='" + constituencyCombo.SelectedValue.ToString() + "',STATE_CODE='" +
+                                   state.ToString() + "',LANGUAGE_1='" +
+                                   language1Combo.SelectedValue.ToString() + "',LANGUAGE_2='" + lang2 + "',IS_FINALIZED ='N',FINALIZATION_DATE='" + empty + "' where BALLOT_ID =" + ballotIdToUpdate;
+                        sqlite_cmd.CommandText = command;
+                        int n = sqlite_cmd.ExecuteNonQuery();
+                        if (n > 0)
+                        {
+                            System.Windows.MessageBox.Show("Master record Updated");
+                            GenerateGrid();
+                            Reset();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Master record Update failed");
+                        }
+
+                        sqlite_cmd.Dispose();
+                        SqLite.CloseSQLLiteConnection(sqlite_conn);
+                    }
+                }
+                else
+                {
+                    //update master record
+                    sqlite_conn = SqLite.OpenSQLLiteConnection(sqlite_conn);
+                    sqlite_cmd = sqlite_conn.CreateCommand();
+                    command = "Update MASTERBALLOT set ELECTION_FOR='" + constituencyCombo.SelectedValue.ToString() + "',STATE_CODE='" +
+                               state.ToString() + "',LANGUAGE_1='" +
+                               language1Combo.SelectedValue.ToString() + "',LANGUAGE_2='" + lang2 + "',IS_FINALIZED ='N',FINALIZATION_DATE='" + empty + "' where BALLOT_ID =" + ballotIdToUpdate;
+                    sqlite_cmd.CommandText = command;
+                    int n = sqlite_cmd.ExecuteNonQuery();
+                    if (n > 0)
+                    {
+                        System.Windows.MessageBox.Show("Master record Updated");
+                        GenerateGrid();
+                        Reset();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Master record Update failed");
+                    }
+
+                    sqlite_cmd.Dispose();
+                    SqLite.CloseSQLLiteConnection(sqlite_conn);
+                }
             }
             btnMasterDetails.IsEnabled = true;
             btnUpdate.IsEnabled = false;
@@ -456,7 +528,7 @@ namespace ETPB_BALLOT_Software
         private void hyperLink_click(object sender, RoutedEventArgs e)
         {
 
-            this.AddMasterBallot.Visibility = System.Windows.Visibility.Visible;
+            AddMasterBallot.Visibility = System.Windows.Visibility.Visible;
         }
 
         private void dgBallotMaster_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)   //selected cell event to perform edit delete and add candidate details
@@ -497,9 +569,9 @@ namespace ETPB_BALLOT_Software
             {
                 btnUpdate.IsEnabled = true;
                 btnMasterDetails.IsEnabled = false;
-                if (this.AddMasterBallot.Visibility == Visibility.Hidden)
+                if (AddMasterBallot.Visibility == Visibility.Hidden)
                 {
-                    this.AddMasterBallot.Visibility = Visibility.Visible;
+                    AddMasterBallot.Visibility = Visibility.Visible;
                 }
                 ballotIdToUpdate = ballotData.BallotID;
                 if (ballotData.constituency == "Assembly")
@@ -548,9 +620,9 @@ namespace ETPB_BALLOT_Software
             BallotData ballotData = ((FrameworkElement)sender).DataContext as BallotData;
             btnUpdate.IsEnabled = true;
             btnMasterDetails.IsEnabled = false;
-            if (this.AddMasterBallot.Visibility == Visibility.Hidden)
+            if (AddMasterBallot.Visibility == Visibility.Hidden)
             {
-                this.AddMasterBallot.Visibility = Visibility.Visible;
+                AddMasterBallot.Visibility = Visibility.Visible;
             }
             if (ballotData != null)
             {
@@ -569,7 +641,10 @@ namespace ETPB_BALLOT_Software
                 {
                     stt = m.Value;
                 }
-                if (stt != null) stateCombo.SelectedValue = stt.TrimStart('(').TrimEnd(')');
+                if (stt != null)
+                {
+                    stateCombo.SelectedValue = stt.TrimStart('(').TrimEnd(')');
+                }
                 //stateCombo.SelectedValue = ballotData.state;
                 language1Combo.SelectedValue = ballotData.language1;
             }
@@ -604,18 +679,12 @@ namespace ETPB_BALLOT_Software
         private void stateCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string StateCode = stateCombo.SelectedValue.ToString();
-            //Dictionary<string, string> LangCode = langCode.StateLanguageDict;
-            //foreach (var item in LangCode)
-            //{
-            //    if (item.Key.ToString() == StateCode)
-            //    {
-            //        language1Combo.SelectedValue= item.Value.ToString();
-            //    }
 
-            //}
             // Added by vijay 
             if (langCode.StateLanguageDict.ContainsKey(StateCode))
+            {
                 language1Combo.SelectedValue = langCode.StateLanguageDict[StateCode];
+            }
         }
 
         private void language1Combo_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -631,7 +700,7 @@ namespace ETPB_BALLOT_Software
                 language2Combo.Visibility = Visibility.Visible;
                 lbl_language2.Visibility = Visibility.Visible;
             }
-          
+
         }
     }
 }

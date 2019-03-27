@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +19,8 @@ namespace CandidateDetails
         public byte[] CandidatePhoto { get; set; }
 
         public int ISNOTA { get; set; }
+
+        
     }
 
     public class BallotCandidateList

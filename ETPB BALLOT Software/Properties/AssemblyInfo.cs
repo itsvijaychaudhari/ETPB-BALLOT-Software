@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ETPB BALLOT Software")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Ballot Creation Tool")]
+[assembly: AssemblyDescription("Create Region specific ballot used for service voters")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ETPB BALLOT Software")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCompany("CDAC")]
+[assembly: AssemblyProduct("ETPB")]
+[assembly: AssemblyCopyright("Copyright ©  2019 C-DAC Gist")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,7 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.2.2")]
-[assembly: AssemblyFileVersion("1.0.2.2")]
+[assembly: AssemblyVersion("1.1.2.3")]
+[assembly: AssemblyFileVersion("1.1.2.3")]
+[assembly: Guid("27460e42-316d-48e6-9b06-f2a580e2b27f")]
+

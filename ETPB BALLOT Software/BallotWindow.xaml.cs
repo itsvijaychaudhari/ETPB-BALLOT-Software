@@ -1,6 +1,9 @@
 ﻿
+using CandidateDetails;
 using Com.Cdac.Gist.Translit;
-
+using ETPB_BALLOT_Software.models;
+using Microsoft.Win32;
+using SelectPdf;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,28 +12,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 //using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using CandidateDetails;
-
-using System.Text.RegularExpressions;
-using SelectPdf;
-
-
-using ETPB_BALLOT_Software.models;
-
-using Microsoft.Win32;
-using System.Drawing;
-using System.Windows.Media;
-using System.Runtime.InteropServices;
 
 namespace ETPB_BALLOT_Software
 {
@@ -39,24 +27,22 @@ namespace ETPB_BALLOT_Software
     /// </summary>
     public partial class BallotWindow : Window
     {
-        SQLiteConnection sqlite_conn = new SQLiteConnection();
-        SQLiteCommand sqlite_cmd;
-        TransliterationProvider transProvider = MainWindow.transProvider;
-        LanguageCode langCode = new LanguageCode();
-        List<string> fonts = new List<string>();
-        string selectedfont = string.Empty;
-        string Locale = null;
-        int BallotId;
-        byte[] CandPhoto = null;
-        byte[] NotaPhoto = null;
-        int detailballotId;
-        public string strConstType;
+        private SQLiteConnection sqlite_conn = new SQLiteConnection();
+        private SQLiteCommand sqlite_cmd;
+        private TransliterationProvider transProvider = MainWindow.transProvider;
+        private LanguageCode langCode = new LanguageCode();
+        private List<string> fonts = new List<string>();
+        public static  string selectedfont = string.Empty;
+        public static bool isChanged = false;
+        private string Locale = null;
+        public static int BallotId;
+        private byte[] CandPhoto = null;
+        private byte[] NotaPhoto = null;
+        private int detailballotId;
+        public static string strConstType;
         public string lang_Official;
-
-        
-
-        CandidateDetails.BallotCandidateList ballotCandidateList = new BallotCandidateList();
-        Dictionary<int, CandidateRecord> TTfileDict = new Dictionary<int, CandidateRecord>();
+        private CandidateDetails.BallotCandidateList ballotCandidateList = new BallotCandidateList();
+        private Dictionary<int, CandidateRecord> TTfileDict = new Dictionary<int, CandidateRecord>();
 
 
         public BallotWindow(BallotData ballotdata)
@@ -65,34 +51,30 @@ namespace ETPB_BALLOT_Software
             lblYear.Content = Convert.ToInt32(System.DateTime.Now.Year).ToString();
             nameConstituency.Content = ballotdata.constituency;
             lblState.Content = ballotdata.state;
-          
+            lblLanguage.Content = ballotdata.language1;
+
             BallotId = ballotdata.BallotID;
             strConstType = ballotdata.constituency;
             lang_Official = ballotdata.language1;
 
-            string st = ballotdata.state;
-            string stt = null;
+
+            string stateString = ballotdata.state;
+            string state = null;
             string regularExpressionPattern = @"\((.*?)\)";
-            Regex re = new Regex(regularExpressionPattern);
+            Regex regex = new Regex(regularExpressionPattern);
 
-            foreach (Match m in re.Matches(st))
+            foreach (Match match in regex.Matches(stateString))
             {
-                stt = m.Value;
+                state = match.Value;
             }
-            string stateID = stt.TrimStart('(').TrimEnd(')');
+            string stateID = state.TrimStart('(').TrimEnd(')');
 
-            Locale = langCode.LanguageDict[stateID];
+            //added by vijay 
+            //get appropriate locale regardless of user choice language
+            //Locale = langCode.LanguageDict[stateID];
 
-            //Dictionary<string, string> LangCode = langCode.LanguageDict;
-            //foreach (var item in LangCode)
-            //{
-            //    if (item.Key.ToString() == stateID)
-            //    {
-            //        Locale = item.Value.ToString();
-            //    }
-
-            //}
-
+            //get user choice language locale
+            Locale = langCode.LangMapedWithLocaleDict[lang_Official];
         }
 
         private void OnLoad(object sender, RoutedEventArgs e)
@@ -118,22 +100,22 @@ namespace ETPB_BALLOT_Software
                 cmbfont.Items.Add(fontFamily.Source);
             }
             cmbfont.SelectedItem = "SakalBharati";
-           
+
         }
 
         private void GenerateGrid()  // retrieves all record from BALLOTDETAILS table and binds to datagrid
         {
-            var list = new List<CandidateRecord>();
+            List<CandidateRecord> list = new List<CandidateRecord>();
             sqlite_conn = SqLite.OpenSQLLiteConnection(sqlite_conn);
             SQLiteDataAdapter Sqa = new SQLiteDataAdapter("select * from BALLOTDETAILS where BALLOTID= '" + BallotId + "' ", sqlite_conn);
             DataTable dt = new DataTable();
             Sqa.Fill(dt);  // fill the dataset
-          
+
             foreach (DataRow row in dt.Rows)
             {
                 list.Add(new CandidateRecord()
                 {
-                    ISNOTA = Convert.ToInt32(row["ISNOTA"]) ,
+                    ISNOTA = Convert.ToInt32(row["ISNOTA"]),
                     DetailBallotID = Convert.ToInt32(row["DETAILBALLOTID"]),
                     BallotID = Convert.ToInt32(row["BALLOTID"]),
                     CandidateNO = Convert.ToInt32(row["CANDIDATESLNO"]),
@@ -142,11 +124,11 @@ namespace ETPB_BALLOT_Software
                     PartyNameENG = (row["PARTYAFFILIATIONENG"] != DBNull.Value) ? row["PARTYAFFILIATIONENG"].ToString() : null,
                     PartyNameOL = (row["PARTYAFFILIATIONOL"] != DBNull.Value) ? row["PARTYAFFILIATIONOL"].ToString() : null,
                     CandidatePhoto = (row["CANDIDATEPHOTO"] != DBNull.Value) ? (byte[])row["CANDIDATEPHOTO"] : null,
-
                 });
-
             }
             dgCandidate.ItemsSource = list;
+            CandidateRecordList.CandidateRecords.Clear();
+            CandidateRecordList.CandidateRecords = list;
 
             //check id Nota is last Record
             if (dt.Rows.Count > 0)
@@ -158,7 +140,7 @@ namespace ETPB_BALLOT_Software
                 }
                 else
                 {
-                   Reset();
+                    Reset();
                 }
             }
             SqLite.CloseSQLLiteConnection(sqlite_conn);
@@ -167,11 +149,13 @@ namespace ETPB_BALLOT_Software
         {
 
             string filename = null;
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();  // Create OpenFileDialog
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog
+            {
 
-            //dlg.Filter = "Images (*.BMP;*.JPG;*.GIF,*.PNG,*.TIFF)|*.BMP;*.JPG;*.GIF;*.PNG;*.TIFF|" + "All files (*.*)|*.*";
-            dlg.Filter = "JPEG Files (*.jpeg)|*.jpeg|JPG Files (*.jpg)|*.jpg | PNG Files (*.png)|*.png ";
-            dlg.Title = "Select a file";
+                //dlg.Filter = "Images (*.BMP;*.JPG;*.GIF,*.PNG,*.TIFF)|*.BMP;*.JPG;*.GIF;*.PNG;*.TIFF|" + "All files (*.*)|*.*";
+                Filter = "Image Files(*.jpg; *.jpeg; *.png; *.bmp)| *.jpg; *.jpeg; *.png; *.bmp",
+                Title = "Select a file"
+            };  // Create OpenFileDialog
 
             Nullable<bool> result = dlg.ShowDialog();  // Display OpenFileDialog by calling ShowDialog method
 
@@ -194,7 +178,7 @@ namespace ETPB_BALLOT_Software
 
         private void OnLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            var textbox = sender as TextBox;
+            TextBox textbox = sender as TextBox;
             if (Locale != "" && textbox?.Text != string.Empty)
             {
                 switch (textbox?.Name)
@@ -225,7 +209,7 @@ namespace ETPB_BALLOT_Software
                   
              */
             string errorMessage = IsEmptyOrNotMethod();
-            if (!String.IsNullOrEmpty(errorMessage))
+            if (!string.IsNullOrEmpty(errorMessage))
             {
                 MessageBox.Show("Please fill following fields.....\n" + errorMessage);
             }
@@ -242,7 +226,7 @@ namespace ETPB_BALLOT_Software
                 if (lang_Official == "English")
                 {
                     #region For English
-                    
+
                     if (chkNotaBox.IsChecked == true)
                     {
                         //if anyobe trying to add NOTA as 1st record --vijay
@@ -291,14 +275,14 @@ namespace ETPB_BALLOT_Software
                             sqlite_cmd.Parameters.AddWithValue("PARTYAFFILIATIONENG", txt_EnglishPartyName.Text.ToString().Replace("'", "''"));
                             sqlite_cmd.Parameters.AddWithValue("PARTYAFFILIATIONOL", null);
                             sqlite_cmd.Parameters.AddWithValue("CANDIDATEPHOTO", null);
-                            sqlite_cmd.Parameters.AddWithValue("ISNOTA", 0);   
+                            sqlite_cmd.Parameters.AddWithValue("ISNOTA", 0);
 
                             int result = sqlite_cmd.ExecuteNonQuery();
                             if (result > 0)
                             {
-                               // MessageBox.Show("Ballot Details inserted");
+                                // MessageBox.Show("Ballot Details inserted");
                                 GenerateGrid();
-                               // Reset();
+                                // Reset();
                             }
 
                             else
@@ -328,7 +312,7 @@ namespace ETPB_BALLOT_Software
                             {
                                 //MessageBox.Show("Ballot Details inserted");
                                 GenerateGrid();
-                               // Reset();
+                                // Reset();
                             }
 
                             else
@@ -349,7 +333,7 @@ namespace ETPB_BALLOT_Software
                         //Try to insert NOTA as 1st record   --vijay
                         if (candidateNoToInsert == 1)
                         {
-                            System.Windows.Forms.MessageBox.Show("You cannot at NOTA as 1st record..!","Warning");
+                            System.Windows.Forms.MessageBox.Show("You cannot at NOTA as 1st record..!", "Warning");
                             Reset();
                             return;
 
@@ -401,7 +385,7 @@ namespace ETPB_BALLOT_Software
                             {
                                 //MessageBox.Show("Ballot Details inserted");
                                 GenerateGrid();
-                               // Reset();
+                                // Reset();
                             }
 
                             else
@@ -429,9 +413,9 @@ namespace ETPB_BALLOT_Software
                             int result = sqlite_cmd.ExecuteNonQuery();
                             if (result > 0)
                             {
-                               // MessageBox.Show("Ballot Details inserted");
+                                // MessageBox.Show("Ballot Details inserted");
                                 GenerateGrid();
-                              //  Reset();
+                                //  Reset();
                             }
 
                             else
@@ -540,9 +524,13 @@ namespace ETPB_BALLOT_Software
 
         private BitmapImage LoadImage(byte[] imageData)
         {
-            if (imageData == null || imageData.Length == 0) return null;
-            var image = new BitmapImage();
-            using (var mem = new MemoryStream(imageData))
+            if (imageData == null || imageData.Length == 0)
+            {
+                return null;
+            }
+
+            BitmapImage image = new BitmapImage();
+            using (MemoryStream mem = new MemoryStream(imageData))
             {
 
 
@@ -565,20 +553,18 @@ namespace ETPB_BALLOT_Software
             }
             image.Freeze();
             return image;
-
-
         }
 
         private byte[] ImageToBytes(JpegBitmapEncoder encoder, ImageSource imageIn)
         {
             byte[] bytes = null;
-            var bitmapSource = imageIn as BitmapSource;
+            BitmapSource bitmapSource = imageIn as BitmapSource;
 
             if (bitmapSource != null)
             {
                 encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
 
-                using (var stream = new MemoryStream())
+                using (MemoryStream stream = new MemoryStream())
                 {
                     encoder.Save(stream);
                     bytes = stream.ToArray();
@@ -589,15 +575,15 @@ namespace ETPB_BALLOT_Software
 
         }
 
-        
+
 
         private void Reset()  // clears all controls except datagrid on main window
         {
             //clear fields
-            txt_EnglishName.Text = String.Empty;
-            txt_RegionalName.Text = String.Empty;
-            txt_EnglishPartyName.Text = String.Empty;
-            txt_RegionalPartyName.Text = String.Empty;
+            txt_EnglishName.Text = string.Empty;
+            txt_RegionalName.Text = string.Empty;
+            txt_EnglishPartyName.Text = string.Empty;
+            txt_RegionalPartyName.Text = string.Empty;
             photo_img.Source = null;
 
             //unchecked field
@@ -609,10 +595,13 @@ namespace ETPB_BALLOT_Software
             btn_Submit.IsEnabled = true;
             btn_reset.IsEnabled = true;
             btnBrowse.IsEnabled = true;
-            
+
             //disabled
             chkForm7a.IsEnabled = false;
             btn_Update.IsEnabled = false;
+            btnSaveBallot.IsEnabled = false;
+            btnPreview.IsEnabled = false;
+
         }
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
@@ -623,7 +612,7 @@ namespace ETPB_BALLOT_Software
 
 
         //structure used for keyboard
-       
+
 
         private void Keyboard_Appearance_Method(object sender, RoutedEventArgs e)
         {
@@ -660,14 +649,20 @@ namespace ETPB_BALLOT_Software
 
         private void FnFormsDatagridLoadingRow(object sender, DataGridRowEventArgs e)
         {
-            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+            if (chkForm7a.IsChecked != true)
+            {
+                e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+            }
+            else
+            {
+                e.Row.Header = null;
+            }
         }
 
-      
+
 
         private void btnSaveBallot_Click(object sender, RoutedEventArgs e)
         {
-
             TTfileDict.Clear();
             sqlite_conn = SqLite.OpenSQLLiteConnection(sqlite_conn);
             sqlite_cmd = sqlite_conn.CreateCommand();
@@ -679,17 +674,17 @@ namespace ETPB_BALLOT_Software
                 if (string.IsNullOrEmpty(oReader["CANDIDATEPHOTO"].ToString()))
                 {
                     TTfileDict.Add(Convert.ToInt32(oReader["DETAILBALLOTID"]),
-                        new CandidateRecord()
-                        {
-                            BallotID = Convert.ToInt32(oReader["BALLOTID"].ToString()),
-                            CandidateNO = Convert.ToInt32(oReader["CANDIDATESLNO"]),
-                            CandidateNameENG = oReader["CANDIDATENAMEENG"].ToString(),
-                            CandidateNameOL = oReader["CANDIDATENAMEOL"].ToString(),
-                            PartyNameENG = oReader["PARTYAFFILIATIONENG"].ToString(),
-                            PartyNameOL = oReader["PARTYAFFILIATIONOL"].ToString(),
-                            CandidatePhoto = new byte[1],
-                            ISNOTA = Convert.ToInt32(oReader["ISNOTA"]),
-                        });
+                                    new CandidateRecord()
+                                    {
+                                        BallotID = Convert.ToInt32(oReader["BALLOTID"].ToString()),
+                                        CandidateNO = Convert.ToInt32(oReader["CANDIDATESLNO"]),
+                                        CandidateNameENG = oReader["CANDIDATENAMEENG"].ToString(),
+                                        CandidateNameOL = oReader["CANDIDATENAMEOL"].ToString(),
+                                        PartyNameENG = oReader["PARTYAFFILIATIONENG"].ToString(),
+                                        PartyNameOL = oReader["PARTYAFFILIATIONOL"].ToString(),
+                                        CandidatePhoto = new byte[1],
+                                        ISNOTA = Convert.ToInt32(oReader["ISNOTA"]),
+                                    });
                 }
 
                 else
@@ -704,7 +699,7 @@ namespace ETPB_BALLOT_Software
                               PartyNameENG = oReader["PARTYAFFILIATIONENG"].ToString(),
                               PartyNameOL = oReader["PARTYAFFILIATIONOL"].ToString(),
                               CandidatePhoto = (byte[])oReader["CANDIDATEPHOTO"],
-                             // CandidatePhoto = Convert.ToBase64String(oReader["CANDIDATEPHOTO"] as byte[]),
+                              // CandidatePhoto = Convert.ToBase64String(oReader["CANDIDATEPHOTO"] as byte[]),
                               ISNOTA = Convert.ToInt32(oReader["ISNOTA"]),
                           });
                 }
@@ -723,7 +718,7 @@ namespace ETPB_BALLOT_Software
             string str = "";
             List<CandidateRecord> candidateLists = new List<CandidateRecord>();
             candidateLists.Clear();
-            foreach (var candidate in TTfileDict)
+            foreach (KeyValuePair<int, CandidateRecord> candidate in TTfileDict)
             {
                 candidateLists.Add(candidate.Value);
             }
@@ -748,8 +743,10 @@ namespace ETPB_BALLOT_Software
             {
                 base64String2 = ConvertImage(Directorypath + "\\PC.PNG");
                 Imagesrc2 = "data:image/jpg;base64," + base64String2;
-                var TemplateInstance = new BallotTemplatePC();
-                TemplateInstance.Session = new Dictionary<string, object>();
+                BallotTemplatePC TemplateInstance = new BallotTemplatePC
+                {
+                    Session = new Dictionary<string, object>()
+                };
                 TemplateInstance.Session.Add("TTfileDict", ballotCandidateList);
                 TemplateInstance.Session.Add("Imagesrc", Imagesrc);
                 TemplateInstance.Session.Add("Imagesrc2", Imagesrc2);
@@ -762,8 +759,10 @@ namespace ETPB_BALLOT_Software
             {
                 base64String2 = ConvertImage(Directorypath + "\\AC.PNG");
                 Imagesrc2 = "data:image/jpg;base64," + base64String2;
-                var TemplateInstanceAC = new BallotTemplateAC();
-                TemplateInstanceAC.Session = new Dictionary<string, object>();
+                BallotTemplateAC TemplateInstanceAC = new BallotTemplateAC
+                {
+                    Session = new Dictionary<string, object>()
+                };
                 TemplateInstanceAC.Session.Add("TTfileDict", ballotCandidateList);
                 TemplateInstanceAC.Session.Add("Imagesrc", Imagesrc);
                 TemplateInstanceAC.Session.Add("Imagesrc2", Imagesrc2);
@@ -773,7 +772,7 @@ namespace ETPB_BALLOT_Software
                 // Bordername = "AC.PNG";
             }
 
-           // ConvertHtmlToImage(str);
+            // ConvertHtmlToImage(str);
 
 
 
@@ -782,7 +781,7 @@ namespace ETPB_BALLOT_Software
             /////////////////////////////////////////////////////////////////////////////////////////
             // Intentionally blank page tt file code
             string str1 = "";
-            var TemplateInstance1 = new IntentionallyBlankPage();
+            IntentionallyBlankPage TemplateInstance1 = new IntentionallyBlankPage();
             //TemplateInstance1.Session = new Dictionary<string, object>();
             //TemplateInstance1.Session.Add(Imagesrc, Imagesrc);
             //TemplateInstance1.Initialize();
@@ -797,7 +796,7 @@ namespace ETPB_BALLOT_Software
             SelectPdf.PdfDocument doc = converter.ConvertHtmlString(str);
 
             SelectPdf.PdfDocument doc1 = converter.ConvertHtmlString(str1);
-            SelectPdf.PdfPage pdfPage = (SelectPdf.PdfPage)doc1.Pages[0];
+            SelectPdf.PdfPage pdfPage = doc1.Pages[0];
             for (int i = 0; i < doc.Pages.Count; i++)
             {
                 if (i % 2 == 1)
@@ -807,12 +806,14 @@ namespace ETPB_BALLOT_Software
             }
 
 
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.DefaultExt = "pdf";
-            saveFileDialog.Filter = "Pdf File|*.pdf";
-            saveFileDialog.Title = "Save Ballot";
-            saveFileDialog.FileName = "Ballot";
-            saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                DefaultExt = "pdf",
+                Filter = "Pdf File|*.pdf",
+                Title = "Save Ballot",
+                FileName = "Ballot",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+            };
 
 
             if (saveFileDialog.ShowDialog() == true)
@@ -846,9 +847,9 @@ namespace ETPB_BALLOT_Software
         //    //m_Bitmap.Save(@"C:\Test.png", ImageFormat.Png);
         //}
 
-      
 
-      
+
+
         private string ConvertImage(string filePath)
         {
             byte[] arr1 = null;
@@ -885,7 +886,7 @@ namespace ETPB_BALLOT_Software
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
             CheckBox checkBox = sender as CheckBox;
-            if ((bool) checkBox.IsChecked && checkBox.Name == "chkNotaBox")
+            if ((bool)checkBox.IsChecked && checkBox.Name == "chkNotaBox")
             {
                 btnBrowse.IsEnabled = false;
                 txt_EnglishPartyName.Text = string.Empty;
@@ -906,7 +907,7 @@ namespace ETPB_BALLOT_Software
                 bmpImage.EndInit();
                 photo_img.Source = bmpImage;
             }
-            else if((bool)checkBox.IsChecked && checkBox.Name == "chkNoPhoto")
+            else if ((bool)checkBox.IsChecked && checkBox.Name == "chkNoPhoto")
             {
                 photo_img.Source = null;
                 btnBrowse.IsEnabled = false;
@@ -915,7 +916,7 @@ namespace ETPB_BALLOT_Software
             {
                 cmbfont.IsEnabled = true;
             }
-            else if (!(bool) checkBox.IsChecked && checkBox.Name == "chkNotaBox")
+            else if (!(bool)checkBox.IsChecked && checkBox.Name == "chkNotaBox")
             {
                 photo_img.Source = null;
                 btnBrowse.IsEnabled = true;
@@ -935,7 +936,7 @@ namespace ETPB_BALLOT_Software
 
         private void OnLostFocus(object sender, RoutedEventArgs e)
         {
-            var textbox = sender as TextBox;
+            TextBox textbox = sender as TextBox;
             if (textbox?.Text != string.Empty)
             {
                 switch (textbox?.Name)
@@ -944,28 +945,28 @@ namespace ETPB_BALLOT_Software
                         if (Regex.Match(textbox.Text, @"^(?:([a-zA-Z0' ])(?!\1\1))+$").Success != true)
                         {
                             MessageBox.Show("Enter valid data");
-                            textbox.Text = String.Empty;
+                            textbox.Text = string.Empty;
                         }
                         break;
                     case "txt_RegionalName":
                         if (Regex.Match(textbox.Text, @"^[^a-zA-Z~!@#$%^&*;:?`~><,\(\)_+=\[\]\{\}\|\.\-\'\/]{1,50}$").Success != true)
                         {
                             MessageBox.Show("Enter valid data");
-                            textbox.Text = String.Empty;
+                            textbox.Text = string.Empty;
                         }
                         break;
                     case "txt_EnglishPartyName":
                         if (Regex.Match(textbox.Text, @"^(?:([a-zA-Z0' ])(?!\1\1))+$").Success != true)
                         {
                             MessageBox.Show("Enter valid data");
-                            textbox.Text = String.Empty;
+                            textbox.Text = string.Empty;
                         }
                         break;
                     case "txt_RegionalPartyName":
                         if (Regex.Match(textbox.Text, @"^[^a-zA-Z~!@#$%^&*;:?`~><,\(\)_+=\[\]\{\}\|\.\-\'\/]{1,50}$").Success != true)
                         {
                             MessageBox.Show("Enter valid data");
-                            textbox.Text = String.Empty;
+                            textbox.Text = string.Empty;
                         }
                         break;
                 }
@@ -974,7 +975,7 @@ namespace ETPB_BALLOT_Software
 
         private string IsEmptyOrNotMethod()
         {
-             string errorMsg = String.Empty;
+            string errorMsg = string.Empty;
 
             if (lang_Official == "English" && chkNotaBox.IsChecked == true)
             {
@@ -1027,13 +1028,13 @@ namespace ETPB_BALLOT_Software
 
             }
 
-            if (lang_Official != "English" && chkNotaBox.IsChecked == true )
+            if (lang_Official != "English" && chkNotaBox.IsChecked == true)
             {
                 if (txt_EnglishName.Text == "" || txt_RegionalName.Text == "")
                 {
                     errorMsg += "- Name !\r\n";
                 }
-             
+
 
             }
 
@@ -1066,9 +1067,12 @@ namespace ETPB_BALLOT_Software
 
         private void btn_edit_Click(object sender, RoutedEventArgs e)
         {
+
+
             CandidateRecord candidateRecord = ((FrameworkElement)sender).DataContext as CandidateRecord;
             btn_Update.IsEnabled = true;
             btn_Submit.IsEnabled = false;
+            //added by vijay to check current record is nota or not
             if (candidateRecord != null)
             {
                 if (candidateRecord.ISNOTA == 1) // Nota record 
@@ -1165,20 +1169,23 @@ namespace ETPB_BALLOT_Software
 
         private void cmbfont_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            
+
             selectedfont = cmbfont.SelectedItem.ToString();
             txt_RegionalName.FontFamily = new System.Windows.Media.FontFamily(selectedfont);
             txt_RegionalPartyName.FontFamily = new System.Windows.Media.FontFamily(selectedfont);
             dgCandidate.FontFamily = new System.Windows.Media.FontFamily(selectedfont);
-           
+
         }
 
+        //added by vijay
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             CheckBox checkBox = sender as CheckBox;
-            if ((bool) checkBox.IsChecked)
+
+            if ((bool)checkBox.IsChecked)
             {
-                System.Windows.Forms.MessageBox.Show("PDF will be created according to FORM7A serial number entered and, \n Verify NOTA is your last entry.","Information");
+                System.Windows.Forms.MessageBox.Show("PDF will be created according to FORM7A serial number entered and, \n Verify NOTA is your last entry.", "Information");
+                GenerateGrid();
                 Col_SRForm7A.Visibility = Visibility.Visible;
             }
             else
@@ -1187,6 +1194,7 @@ namespace ETPB_BALLOT_Software
             }
         }
 
+        //added by vijay
         private void IfNotaDoThis()
         {
             //disabled
@@ -1199,6 +1207,7 @@ namespace ETPB_BALLOT_Software
             //enabled
             chkForm7a.IsEnabled = true; //enable serial number chkbox to chnage serial number according to fomr 7a after Nota added
             btnSaveBallot.IsEnabled = true;
+            btnPreview.IsEnabled = true;
 
             txt_EnglishName.IsEnabled = true;
             txt_RegionalName.IsEnabled = true;
@@ -1210,54 +1219,77 @@ namespace ETPB_BALLOT_Software
             chkNotaBox.IsChecked = true;
 
             //clear
-            txt_EnglishName.Text = String.Empty;
-            txt_RegionalName.Text = String.Empty;
-            txt_EnglishPartyName.Text = String.Empty;
-            txt_RegionalPartyName.Text = String.Empty;
+            txt_EnglishName.Text = string.Empty;
+            txt_RegionalName.Text = string.Empty;
+            txt_EnglishPartyName.Text = string.Empty;
+            txt_RegionalPartyName.Text = string.Empty;
             photo_img.Source = null;
         }
 
+
+        //added by vijay to change form7a serial number
         private void DgCandidate_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             if (e.EditingElement is TextBox)
             {
-                int newSR =Convert.ToInt32( (e.EditingElement as TextBox).Text);
-                
-                CandidateRecord candidateRecord = (sender as DataGrid).CurrentItem as CandidateRecord;
-                if (newSR != candidateRecord.CandidateNO)
+                int newSR = Convert.ToInt32((e.EditingElement as TextBox).Text);
+                CandidateRecord candidateRecord = e.Row.Item as CandidateRecord;
+                //CandidateRecord candidateRecord = (sender as DataGrid).CurrentItem as CandidateRecord;
+                if (candidateRecord != null && newSR != candidateRecord.CandidateNO)
                 {
-                    sqlite_conn = SqLite.OpenSQLLiteConnection(sqlite_conn);
-                    sqlite_cmd = sqlite_conn.CreateCommand();
+                    //sqlite_conn = SqLite.OpenSQLLiteConnection(sqlite_conn);
+                    //sqlite_cmd = sqlite_conn.CreateCommand();
 
-                    string command = "UPDATE BALLOTDETAILS SET CANDIDATESLNO = @CANDIDATESLNO where DETAILBALLOTID = @DETAILBALLOTID";
-                    using (sqlite_cmd = new SQLiteCommand(command, sqlite_conn))
+                    //string command = "UPDATE BALLOTDETAILS SET CANDIDATESLNO = @CANDIDATESLNO where DETAILBALLOTID = @DETAILBALLOTID";
+                    //using (sqlite_cmd = new SQLiteCommand(command, sqlite_conn))
+                    //{
+                    //    sqlite_cmd.Parameters.AddWithValue("@CANDIDATESLNO", newSR);
+                    //    sqlite_cmd.Parameters.AddWithValue("@DETAILBALLOTID", candidateRecord.DetailBallotID);
+
+                    //    int result = sqlite_cmd.ExecuteNonQuery();
+                    //    if (result > 0)
+                    //    {
+                    //        string msg = $"Serial Number of {candidateRecord.CandidateNameENG} "+" "+$" {candidateRecord.CandidateNameOL} is changed from {candidateRecord.CandidateNO} "+" to "+ $"{newSR}.";
+                    //        MessageBox.Show(msg,"Information");
+                    //        GenerateGrid();
+                    //        //Reset();
+                    //        //btn_Submit.IsEnabled = true;
+                    //        //btn_Update.IsEnabled = false;
+                    //    }
+                    //    else
+                    //    {
+                    //        MessageBox.Show("Failed to update serial number","Error");
+                    //    }
+                    //}
+                    //sqlite_cmd.Dispose();
+                    //SqLite.CloseSQLLiteConnection(sqlite_conn);
+
+                    //conditions
+                    // user cannot add serial number greater than or equal to nota
+
+                    if (newSR >= CandidateRecordList.CandidateRecords.Count)
                     {
-                        sqlite_cmd.Parameters.AddWithValue("@CANDIDATESLNO", newSR);
-                        sqlite_cmd.Parameters.AddWithValue("@DETAILBALLOTID", candidateRecord.DetailBallotID);
-
-                        int result = sqlite_cmd.ExecuteNonQuery();
-                        if (result > 0)
-                        {
-                            string msg = $"Serial Number of {candidateRecord.CandidateNameENG} "+" "+$" {candidateRecord.CandidateNameOL} is changed from {candidateRecord.CandidateNO} "+" to "+ $"{newSR}.";
-                            MessageBox.Show(msg,"Information");
-                            GenerateGrid();
-                            //Reset();
-                            //btn_Submit.IsEnabled = true;
-                            //btn_Update.IsEnabled = false;
-                        }
-
-                        else
-                        {
-                            MessageBox.Show("Failed to update serial number","Error");
-                        }
+                        CandidateRecord update = CandidateRecordList.CandidateRecords
+                            .Where(candidate => candidate.CandidateNO == candidateRecord.CandidateNO)
+                            .Select(candidate => candidate).First();
+                        (e.EditingElement as TextBox).Text = update.CandidateNO.ToString();
                     }
-                    sqlite_cmd.Dispose();
-                    SqLite.CloseSQLLiteConnection(sqlite_conn);
+                    else
+                    {
+                        //update list
+                        CandidateRecord update = CandidateRecordList.CandidateRecords.Where(candidate => candidate.CandidateNO == candidateRecord.CandidateNO).Select(candidate => candidate).First() as CandidateRecord;
+                        update.CandidateNO = newSR;
+                        isChanged = true;
+                    }
                 }
-
             }
+        }
 
-            
+        private void btnPrev_Click(object sender, RoutedEventArgs e)
+        {
+            PreviewWindow preview = new PreviewWindow();
+             bool? result = preview.ShowDialog();
+            GenerateGrid();
         }
     }
 }

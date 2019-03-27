@@ -5,7 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ETPB_BALLOT_Software"
         mc:Ignorable="d"
-         Title="ETPB Ballot Software" Height="600" Width="1050" WindowState="Normal"  WindowStartupLocation="CenterScreen" Icon="images/nvsp_logo.ico" Loaded="On_Load">
+        Height="600" WindowChrome.ResizeGripDirection="None" 
+        Width="1050" 
+        WindowState="Normal"  
+        WindowStartupLocation="CenterScreen" 
+        Icon="images/nvsp_logo.ico" Loaded="On_Load"
+        ResizeMode="CanMinimize"
+        Title="ETPB Ballot Software">
     
     <Window.Resources>
         <Style TargetType="{x:Type DataGridColumnHeader}" x:Key="dataGridHeader">
@@ -58,16 +64,16 @@
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Label Grid.Row="0" Grid.Column="0" Content="Election for" FontSize="16" Margin="50,10,0,0"  />
-                <ComboBox Grid.Row="0" Grid.Column="1" Name="constituencyCombo"  Height="30"  Padding="5" Width="190" Margin="20,10,0,0">
+                <ComboBox Grid.Row="0" Grid.Column="1" Name="constituencyCombo" SelectedIndex="0" Height="30"  Padding="5" Width="190" Margin="20,10,0,0">
 
                 </ComboBox>
                 <Label Grid.Row="0" Grid.Column="2" Content="Select State" FontSize="16" Margin="30,10,0,0"  />
-                <ComboBox Grid.Row="0" Grid.Column="3" Name="stateCombo"  Height="30"  Padding="5" Width="190" Margin="20,10,0,0" SelectionChanged="stateCombo_SelectionChanged"></ComboBox>
+                <ComboBox Grid.Row="0" Grid.Column="3" Name="stateCombo"  Height="30"  Padding="5" Width="190" Margin="20,10,0,0" SelectedIndex="0" SelectionChanged="stateCombo_SelectionChanged"></ComboBox>
                 <Label Grid.Row="1" Grid.Column="0" Content="Language 1" FontSize="16" Margin="50,10,0,0"  />
-                <ComboBox Grid.Row="1" Grid.Column="1" Name="language1Combo"  Height="30"  Padding="5" Width="190" Margin="20,10,0,10" SelectionChanged="language1Combo_SelectionChanged">
+                <ComboBox Grid.Row="1" Grid.Column="1" Name="language1Combo"  Height="30"  Padding="5" SelectedIndex="0" Width="190" Margin="20,10,0,10" SelectionChanged="language1Combo_SelectionChanged">
                 </ComboBox>
                 <Label Grid.Row="1" Grid.Column="2" Content="Language 2" FontSize="16" Margin="30,10,0,0"  Name="lbl_language2"/>
-                <ComboBox Grid.Row="1" Grid.Column="3" Name="language2Combo"  Height="30"  Padding="5" Width="190" Margin="20,10,0,10">
+                <ComboBox Grid.Row="1" Grid.Column="3" Name="language2Combo" SelectedIndex="1" Height="30"  Padding="5" Width="190" Margin="20,10,0,10">
                     <ComboBoxItem Content="Select Language" ></ComboBoxItem>
                     <ComboBoxItem IsSelected="True" Content="English" ></ComboBoxItem>
                 </ComboBox>
@@ -104,13 +110,16 @@
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Background" Value="#FF5397D1"/>
                                 </Trigger>
+                                <Trigger Property="Button.IsEnabled" Value="False">
+                                    <Setter Property="Button.Opacity" Value="0.5" />
+                                </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
 
                 <!--<Button Grid.Row="0" Grid.Column="4" Content="Update"  Name="btnUpdate" Width="120" Height="40" Margin="160,10,0,10" Foreground="White"  Click="btnUpdate_Click" FontSize="13" Style="{StaticResource BtnAll}"></Button>-->
-                <Button Width="120" Content="Update" Foreground="Yellow"  Height="30" Grid.Row="0" Grid.Column="4" Margin="160,10,0,10" Click="btnUpdate_Click" FontSize="13" Name="btnUpdate">
+                <Button Width="120" Content="Update" Foreground="Yellow" IsEnabled="False" Height="30" Grid.Row="0" Grid.Column="4" Margin="160,10,0,10" Click="btnUpdate_Click" FontSize="13" Name="btnUpdate">
                     <Button.BitmapEffect>
                         <DropShadowBitmapEffect Color="Black" Direction="320" ShadowDepth="15" Softness="1" Opacity="0.5"/>
                     </Button.BitmapEffect>
@@ -141,6 +150,9 @@
                                 </Trigger>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Background" Value="#FF5397D1"/>
+                                </Trigger>
+                                <Trigger Property="Button.IsEnabled" Value="False">
+                                    <Setter Property="Button.Opacity" Value="0.5" />
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -180,6 +192,9 @@
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Background" Value="#FF5397D1"/>
                                 </Trigger>
+                                <Trigger Property="Button.IsEnabled" Value="False">
+                                    <Setter Property="Button.Opacity" Value="0.5" />
+                                </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Button.Template>
@@ -217,6 +232,9 @@
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Background" Value="#FF5397D1"/>
                                 </Trigger>
+                                <Trigger Property="Button.IsEnabled" Value="False">
+                                    <Setter Property="Button.Opacity" Value="0.5" />
+                                </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Button.Template>
@@ -246,7 +264,7 @@
                             <DataTemplate>
                                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
                                       <Button Width="50" Height="25" Name="btn_edit" Click="btn_edit_Click" BorderBrush="Transparent" Background="Transparent" ToolTip="Click here to edit the record">
-                                         <Image Source="images/edit.ico" Width="50" Height="25"/>
+                                         <Image Source="pack://application:,,,/images/edit.ico" Width="50" Height="25"/>
                                           </Button>
                                 </TextBlock>
                             </DataTemplate>
@@ -258,7 +276,7 @@
                             <DataTemplate>
                                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
                                      <Button Width="50" Height="25" Name="btn_delete" Click="btn_delete_Click" BorderBrush="Transparent" Background="Transparent" ToolTip="Click here to delete the record">
-                                         <Image Source="images/delete1.ico" Width="50" Height="25"/>
+                                         <Image Source="pack://application:,,,/images/delete1.ico" Width="50" Height="25"/>
                                          </Button>
                                 </TextBlock>
                             </DataTemplate>
@@ -270,7 +288,7 @@
                             <DataTemplate>
                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top">
                                     <Button Width="50" Height="25" Name="btn_candidate_details" Click="btn_candidate_details_Click" BorderBrush="Transparent" Background="Transparent" ToolTip="Click here to add candidate details">
-                                      <Image Source="images/user.ico" Width="50" Height="25"></Image>
+                                      <Image Source="pack://application:,,,/images/user.ico" Width="50" Height="25"></Image>
                                         </Button>
                                 </TextBlock>
                             </DataTemplate>
